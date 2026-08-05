@@ -1,0 +1,247 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+            <div>
+                <h2 class="h4 mb-1">AI Business Assistant</h2>
+                <p class="text-muted mb-0">Asisten AI untuk membantu pelaku UMKM menganalisis bisnis, pemasaran, stok, dan penjualan.</p>
+            </div>
+            <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2">
+                <i class="bi bi-robot me-2"></i>
+                Smart UMKM AI
+            </span>
+        </div>
+    </x-slot>
+
+    <div class="container-fluid">
+        <div class="card border-0 shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #f8fbff 0%, #eef5ff 100%);">
+            <div class="card-body p-0">
+                <div class="p-4 border-bottom border-light">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-robot fs-4 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Halo, saya Smart UMKM AI 🤖</h5>
+                                    <p class="mb-0 text-muted">Silakan tanyakan apa saja tentang bisnis Anda.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-lg-end">
+                            <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk terlaris saya">Produk terlaris saya</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Ide promosi hari ini">Ide promosi hari ini</button>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 justify-content-lg-end mt-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Analisis penjualan">Analisis penjualan</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Strategi meningkatkan omzet">Strategi meningkatkan omzet</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-shell p-3 p-md-4" id="chatShell" style="height: 70vh; overflow-y: auto; background: #f8fbff;">
+                    @php($messages = $messages ?? [])
+                    @if (empty($messages))
+                        <div class="d-flex justify-content-start mb-3">
+                            <div class="chat-bubble chat-bubble--ai">
+                                <div class="fw-semibold mb-1">Smart UMKM AI</div>
+                                <div>Halo! Saya siap membantu menganalisis penjualan, stok, dan strategi promosi bisnis Anda. 😊</div>
+                                <div class="chat-time">{{ now()->format('H:i') }}</div>
+                            </div>
+                        </div>
+                    @else
+                        @foreach ($messages as $message)
+                            <div class="d-flex {{ $message['role'] === 'user' ? 'justify-content-end' : 'justify-content-start' }} mb-3">
+                                <div class="chat-bubble {{ $message['role'] === 'user' ? 'chat-bubble--user' : 'chat-bubble--ai' }}">
+                                    <div class="fw-semibold mb-1">{{ $message['role'] === 'user' ? 'Anda' : 'Smart UMKM AI' }}</div>
+                                    <<div class="ai-message">{!! $message['content'] !!}</div>
+                                    <div class="chat-time">{{ $message['time'] ?? now()->format('H:i') }}</div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+
+                    <div id="typingIndicator" class="d-none mb-3">
+                        <div class="d-flex justify-content-start">
+                            <div class="chat-bubble chat-bubble--ai">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                    <span class="typing-dot"></span>
+                                    <span class="ms-2">AI sedang mengetik...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-top bg-white p-3 p-md-4">
+                    <form id="chatForm" class="d-flex gap-2 align-items-end">
+                        @csrf
+                        <div class="flex-grow-1">
+                            <textarea id="messageInput" class="form-control" rows="2" placeholder="Tanyakan tentang bisnis Anda..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('styles')
+        <style>
+            .chat-shell::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .chat-shell::-webkit-scrollbar-thumb {
+                background: rgba(37, 99, 235, 0.25);
+                border-radius: 999px;
+            }
+
+            .chat-bubble {
+                max-width: 75%;
+                padding: 0.9rem 1rem;
+                border-radius: 1rem;
+                box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+                border: 1px solid rgba(226, 232, 240, 0.9);
+                line-height: 1.5;
+            }
+
+            .chat-bubble--user {
+                background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+                color: #fff;
+                border-bottom-right-radius: 0.35rem;
+            }
+
+            .chat-bubble--ai {
+                background: #ffffff;
+                color: #0f172a;
+                border-bottom-left-radius: 0.35rem;
+            }
+
+            .chat-time {
+                font-size: 0.75rem;
+                opacity: 0.7;
+                margin-top: 0.35rem;
+            }
+
+            .typing-dot {
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: #93c5fd;
+                animation: blink 1.2s infinite ease-in-out;
+            }
+
+            .typing-dot:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .typing-dot:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+
+            @keyframes blink {
+                0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+                40% { transform: scale(1); opacity: 1; }
+            }
+
+            @media (max-width: 768px) {
+                .chat-bubble {
+                    max-width: 90%;
+                }
+            }
+        </style>
+    @endpush
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const chatShell = document.getElementById('chatShell');
+                const chatForm = document.getElementById('chatForm');
+                const messageInput = document.getElementById('messageInput');
+                const typingIndicator = document.getElementById('typingIndicator');
+
+                function scrollToBottom() {
+                    chatShell.scrollTop = chatShell.scrollHeight;
+                }
+
+                function appendMessage(role, content, time) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'd-flex ' + (role === 'user' ? 'justify-content-end' : 'justify-content-start') + ' mb-3';
+
+                    const bubble = document.createElement('div');
+                    bubble.className = 'chat-bubble ' + (role === 'user' ? 'chat-bubble--user' : 'chat-bubble--ai');
+
+                    const author = document.createElement('div');
+                    author.className = 'fw-semibold mb-1';
+                    author.textContent = role === 'user' ? 'Anda' : 'Smart UMKM AI';
+
+                   const body = document.createElement('div');
+body.className = 'ai-message';
+body.innerHTML = content;
+
+                    const timeEl = document.createElement('div');
+                    timeEl.className = 'chat-time';
+                    timeEl.textContent = time;
+
+                    bubble.appendChild(author);
+                    bubble.appendChild(body);
+                    bubble.appendChild(timeEl);
+                    wrapper.appendChild(bubble);
+                    chatShell.insertBefore(wrapper, typingIndicator);
+                    scrollToBottom();
+                }
+
+                chatForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const message = messageInput.value.trim();
+                    if (!message) {
+                        return;
+                    }
+
+                    const now = new Date();
+                    const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                    appendMessage('user', message, time);
+                    messageInput.value = '';
+                    typingIndicator.classList.remove('d-none');
+                    scrollToBottom();
+
+                    fetch('{{ route('ai-assistant.send') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ message: message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        typingIndicator.classList.add('d-none');
+                        appendMessage('assistant', data.reply, data.messages[data.messages.length - 1].time);
+                    })
+                    .catch(() => {
+                        typingIndicator.classList.add('d-none');
+                        appendMessage('assistant', 'Maaf, terjadi kesalahan saat menghubungkan AI.', new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+                    });
+                });
+
+                document.querySelectorAll('.quick-question').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        messageInput.value = this.dataset.message;
+                        chatForm.requestSubmit();
+                    });
+                });
+
+                scrollToBottom();
+            });
+        </script>
+    @endpush
+</x-app-layout>
