@@ -3,10 +3,10 @@
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
                 <p class="text-uppercase fw-bold mb-2 profile-page__eyebrow">
-                    {{ __('Account Settings') }}
+                    Pengaturan Akun
                 </p>
                 <h2 class="h2 mb-0 text-dark">
-                    {{ __('Profile') }}
+                    Profil Saya
                 </h2>
             </div>
             <div class="profile-page__pill">
@@ -31,8 +31,8 @@
                             </div>
                         </div>
                         <div class="d-flex flex-wrap gap-2">
-                            <span class="profile-chip"><i class="bi bi-shield-check me-2"></i>{{ __('Secure') }}</span>
-                            <span class="profile-chip"><i class="bi bi-stars me-2"></i>{{ __('Premium') }}</span>
+                            <span class="profile-chip"><i class="bi bi-shield-check me-2"></i>Akun Aman</span>
+                            <span class="profile-chip"><i class="bi bi-check2-circle me-2"></i>Aktif</span>
                         </div>
                     </div>
 
@@ -41,7 +41,7 @@
                             <div class="profile-stat-card">
                                 <div class="profile-stat-icon"><i class="bi bi-person-badge"></i></div>
                                 <div>
-                                    <small class="text-white-50">{{ __('Role') }}</small>
+                                    <small class="text-white-50">Peran</small>
                                     <h6 class="mb-0 mt-1">{{ ucfirst($user->role ?? 'User') }}</h6>
                                 </div>
                             </div>
@@ -50,8 +50,8 @@
                             <div class="profile-stat-card">
                                 <div class="profile-stat-icon"><i class="bi bi-check-circle"></i></div>
                                 <div>
-                                    <small class="text-white-50">{{ __('Status') }}</small>
-                                    <h6 class="mb-0 mt-1">{{ __('Active') }}</h6>
+                                    <small class="text-white-50">Status</small>
+                                    <h6 class="mb-0 mt-1">Aktif</h6>
                                 </div>
                             </div>
                         </div>
@@ -59,8 +59,8 @@
                             <div class="profile-stat-card">
                                 <div class="profile-stat-icon"><i class="bi bi-envelope-check"></i></div>
                                 <div>
-                                    <small class="text-white-50">{{ __('Email') }}</small>
-                                    <h6 class="mb-0 mt-1">{{ __('Verified') }}</h6>
+                                    <small class="text-white-50">Email</small>
+                                    <h6 class="mb-0 mt-1">{{ $user->email_verified_at ? 'Terverifikasi' : 'Belum diverifikasi' }}</h6>
                                 </div>
                             </div>
                         </div>
@@ -68,8 +68,8 @@
                             <div class="profile-stat-card">
                                 <div class="profile-stat-icon"><i class="bi bi-clock-history"></i></div>
                                 <div>
-                                    <small class="text-white-50">{{ __('Updated') }}</small>
-                                    <h6 class="mb-0 mt-1">{{ __('Just now') }}</h6>
+                                    <small class="text-white-50">Diperbarui</small>
+                                    <h6 class="mb-0 mt-1">{{ $user->updated_at?->format('d M Y') ?? '-' }}</h6>
                                 </div>
                             </div>
                         </div>

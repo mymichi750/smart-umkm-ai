@@ -109,14 +109,14 @@ placeholder="Cari produk...">
 <div class="card-body px-4">
 
 
-<div class="row g-3" id="productList">
+<div class="row g-2 g-sm-3" id="productList">
 
 
 
 @foreach($products as $product)
 
 
-<div class="col-md-6 product-item">
+<div class="col-6 col-md-6 col-xl-6 product-item">
 
     <div class="product-card">
 
@@ -596,7 +596,39 @@ margin:5px 0 0;
 
 }
 
+/* Responsif untuk kartu produk */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
+.product-card .btn-add-cart {
+    margin-top: auto;
+}
+
+@media (max-width: 575.98px) {
+    .product-card {
+        padding: 12px;
+        border-radius: 14px;
+    }
+    .product-icon {
+        font-size: 1.4rem;
+    }
+    .product-name {
+        font-size: 0.85rem;
+    }
+    .product-sku {
+        font-size: 0.7rem;
+    }
+    .product-price {
+        font-size: 0.85rem;
+    }
+    .product-card .btn-add-cart {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.5rem;
+    }
+}
 
 </style>
 

@@ -5,7 +5,9 @@
                 <h2 class="h4 mb-1">Pengguna</h2>
                 <p class="text-muted mb-0">Kelola akun admin dan kasir.</p>
             </div>
-            <a href="{{ route('users.create') }}" class="btn btn-success">Tambah Pengguna</a>
+            <a href="{{ route('users.create') }}" class="btn crud-create-btn">
+                <i class="bi bi-plus-lg"></i> Tambah Pengguna
+            </a>
         </div>
     </x-slot>
 
@@ -40,14 +42,16 @@
                                     <td>{{ $user->email }}</td>
                                     <td>{{ ucfirst($user->role) }}</td>
                                     <td>{{ $user->phone }}</td>
-                                    <td>
-                                        <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-outline-secondary">Lihat</a>
-                                        <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Hapus pengguna ini?');">
+                                    <td class="text-end">
+                                        <div class="crud-actions" role="group" aria-label="Aksi pengguna">
+                                        <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary crud-action-btn" title="Lihat detail" aria-label="Lihat detail pengguna"><i class="bi bi-eye"></i></a>
+                                        <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-primary crud-action-btn" title="Edit" aria-label="Edit pengguna"><i class="bi bi-pencil-square"></i></a>
+                                        <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Hapus pengguna ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                                            <button type="submit" class="btn btn-outline-danger crud-action-btn" title="Hapus" aria-label="Hapus pengguna"><i class="bi bi-trash"></i></button>
                                         </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

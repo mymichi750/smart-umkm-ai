@@ -12,7 +12,7 @@
         @include('partials.alerts')
         <div class="card shadow-sm">
             <div class="card-body">
-                <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('products.update', $product) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="row g-3">
@@ -52,14 +52,7 @@
                                 <option value="0" {{ old('active', $product->active) ? '' : 'selected' }}>Nonaktif</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Gambar Produk</label>
-                            <input type="file" name="image" class="form-control">
-                            @if($product->image)
-                                <small class="text-muted">Gambar saat ini: {{ basename($product->image) }}</small>
-                            @endif
-                        </div>
-                        <div class="col-12">
+<div class="col-12">
                             <label class="form-label">Deskripsi</label>
                             <textarea name="description" rows="4" class="form-control">{{ old('description', $product->description) }}</textarea>
                         </div>

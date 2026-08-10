@@ -42,13 +42,15 @@
                                     <td>{{ $transaction->user->name }}</td>
                                     <td>Rp {{ number_format($transaction->total, 0, ',', '.') }}</td>
                                     <td>{{ $transaction->created_at->format('d M Y H:i') }}</td>
-                                    <td>
-                                        <a href="{{ route('transactions.show', $transaction) }}" class="btn btn-sm btn-outline-secondary">Detail</a>
-                                        <form action="{{ route('transactions.destroy', $transaction) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Hapus transaksi ini?');">
+                                    <td class="text-end">
+                                        <div class="crud-actions" role="group" aria-label="Aksi transaksi">
+                                        <a href="{{ route('transactions.show', $transaction) }}" class="btn btn-outline-secondary crud-action-btn" title="Lihat detail" aria-label="Lihat detail transaksi"><i class="bi bi-eye"></i></a>
+                                        <form action="{{ route('transactions.destroy', $transaction) }}" method="POST" onsubmit="return confirm('Hapus transaksi ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                                            <button type="submit" class="btn btn-outline-danger crud-action-btn" title="Hapus" aria-label="Hapus transaksi"><i class="bi bi-trash"></i></button>
                                         </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

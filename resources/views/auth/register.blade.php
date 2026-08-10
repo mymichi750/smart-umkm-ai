@@ -293,6 +293,119 @@
 
 }
 
+/* Register page: keep the form compact and precisely within the viewport. */
+body:has(.register-wrapper) {
+    overflow: hidden;
+}
+
+body:has(.register-wrapper) .auth-card {
+    max-height: calc(100dvh - 32px);
+}
+
+body:has(.register-wrapper) .auth-form {
+    padding-top: 24px !important;
+    padding-bottom: 24px !important;
+}
+
+body:has(.register-wrapper) .auth-form > .d-lg-none {
+    display: none !important;
+}
+
+.register-wrapper {
+    min-height: 0;
+    height: 100%;
+    padding: 0;
+}
+
+.register-card {
+    max-width: 460px;
+    padding: 28px 30px 24px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, .10);
+}
+
+.register-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    font-size: 24px;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, .24);
+}
+
+.register-header h2 {
+    margin: 10px 0 4px;
+    font-size: 1.45rem;
+}
+
+.register-header p {
+    margin-bottom: 0;
+    font-size: .88rem;
+    line-height: 1.45;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-size: .88rem;
+}
+
+.form-control {
+    height: 46px;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-size: .92rem;
+}
+
+.register-btn {
+    height: 48px;
+    border-radius: 12px;
+    font-size: .95rem;
+    box-shadow: 0 12px 22px rgba(37, 99, 235, .24);
+}
+
+.register-btn:hover {
+    box-shadow: 0 16px 28px rgba(37, 99, 235, .3);
+}
+
+@media (max-width: 991.98px) {
+    body:has(.register-wrapper) .auth-card {
+        max-width: 520px;
+    }
+
+    body:has(.register-wrapper) .auth-hero {
+        display: none !important;
+    }
+
+    body:has(.register-wrapper) .auth-form {
+        padding: 16px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .register-card {
+        padding: 22px 20px 18px;
+        border-radius: 18px;
+    }
+
+    .register-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .register-header p {
+        font-size: .8rem;
+    }
+
+    .form-group.mb-3 {
+        margin-bottom: .65rem !important;
+    }
+
+    .form-group.mb-4,
+    .text-center.mt-4 {
+        margin-top: .85rem !important;
+        margin-bottom: .85rem !important;
+    }
+}
+
 
 
 </style>

@@ -74,20 +74,25 @@
 
 
 
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 gap-sm-3">
 
 
                     <div class="brand-title">
 
-                        <span>
+                        <span class="d-none d-sm-inline">
                             {{ config('app.name','Smart UMKM AI') }}
+                        </span>
+
+                        <span class="d-sm-none">
+                            <i class="bi bi-robot me-1"></i>
+                            Smart UMKM
                         </span>
 
                     </div>
 
 
 
-                    <span class="ai-badge">
+                    <span class="ai-badge d-none d-md-inline-flex">
 
                         <i class="bi bi-robot me-1"></i>
 

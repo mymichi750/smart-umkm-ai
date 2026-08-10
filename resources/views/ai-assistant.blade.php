@@ -23,8 +23,8 @@
                                     <i class="bi bi-robot fs-4 text-primary"></i>
                                 </div>
                                 <div>
-                                    <h5 class="mb-1">Halo, saya Smart UMKM AI 🤖</h5>
-                                    <p class="mb-0 text-muted">Silakan tanyakan apa saja tentang bisnis Anda.</p>
+                                    <h5 class="mb-1">Smart UMKM AI, mitra keputusan bisnis Anda</h5>
+                                    <p class="mb-0 text-muted">Ubah data penjualan dan stok menjadi langkah bisnis yang lebih tepat.</p>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +34,8 @@
                                 <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Ide promosi hari ini">Ide promosi hari ini</button>
                             </div>
                             <div class="d-flex flex-wrap gap-2 justify-content-lg-end mt-2">
-                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Analisis penjualan">Analisis penjualan</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Analisis penjualan saya berdasarkan data 30 hari terakhir">Analisis penjualan</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk apa yang stoknya menipis dan perlu segera diisi?">Stok menipis</button>
                                 <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Strategi meningkatkan omzet">Strategi meningkatkan omzet</button>
                             </div>
                         </div>
@@ -47,7 +48,7 @@
                         <div class="d-flex justify-content-start mb-3">
                             <div class="chat-bubble chat-bubble--ai">
                                 <div class="fw-semibold mb-1">Smart UMKM AI</div>
-                                <div>Halo! Saya siap membantu menganalisis penjualan, stok, dan strategi promosi bisnis Anda. 😊</div>
+                                <div>Halo! Saya siap mengubah data penjualan dan stok Anda menjadi insight serta rekomendasi bisnis yang praktis.</div>
                                 <div class="chat-time">{{ now()->format('H:i') }}</div>
                             </div>
                         </div>
@@ -56,7 +57,7 @@
                             <div class="d-flex {{ $message['role'] === 'user' ? 'justify-content-end' : 'justify-content-start' }} mb-3">
                                 <div class="chat-bubble {{ $message['role'] === 'user' ? 'chat-bubble--user' : 'chat-bubble--ai' }}">
                                     <div class="fw-semibold mb-1">{{ $message['role'] === 'user' ? 'Anda' : 'Smart UMKM AI' }}</div>
-                                    <<div class="ai-message">{!! $message['content'] !!}</div>
+                                    <div class="ai-message">{!! $message['content'] !!}</div>
                                     <div class="chat-time">{{ $message['time'] ?? now()->format('H:i') }}</div>
                                 </div>
                             </div>
@@ -65,7 +66,7 @@
 
                     <div id="typingIndicator" class="d-none mb-3">
                         <div class="d-flex justify-content-start">
-                            <div class="chat-bubble chat-bubble--ai">
+                            <div class="chat-bubble chat-bubble--ai shadow-sm">
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="typing-dot"></span>
                                     <span class="typing-dot"></span>
@@ -152,9 +153,27 @@
                 40% { transform: scale(1); opacity: 1; }
             }
 
-            @media (max-width: 768px) {
+@media (max-width: 768px) {
                 .chat-bubble {
                     max-width: 90%;
+                }
+            }
+
+            @media (max-width: 575.98px) {
+                .chat-bubble {
+                    max-width: 95%;
+                    padding: 0.75rem 0.85rem;
+                    font-size: 0.9rem;
+                }
+                .chat-bubble .chat-time {
+                    font-size: 0.68rem;
+                }
+                .quick-question {
+                    font-size: 0.78rem;
+                    padding: 0.35rem 0.6rem;
+                }
+                #messageInput {
+                    font-size: 0.9rem;
                 }
             }
         </style>

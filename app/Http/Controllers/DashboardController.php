@@ -6,7 +6,9 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -14,7 +16,7 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
 
-        $salesToday = Transaction::whereDate('created_at', $today)->sum('total');
+        $salesToday = (float) Transaction::whereDate('created_at', $today)->sum('total');
         $transactionsToday = Transaction::whereDate('created_at', $today)->count();
         $productsCount = Product::count();
         $lowStockProducts = Product::where('stock', '<=', 5)->orderBy('stock')->limit(5)->get();
@@ -29,12 +31,137 @@ class DashboardController extends Controller
                 return $item;
             });
 
+        // ==========================================================
+        // 1. ANALISIS PRODUK TERLARIS (Top 5)
+        // ==========================================================
+        $topProducts = TransactionDetail::select('product_id')
+            ->selectRaw('SUM(quantity) as total_qty')
+            ->selectRaw('SUM(subtotal) as total_revenue')
+            ->with('product')
+            ->groupBy('product_id')
+            ->orderByDesc('total_qty')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                $item->total_revenue = (float) $item->total_revenue;
+                return $item;
+            });
+
+        // ==========================================================
+        // 2. ANALISIS TREN PENJUALAN + INSIGHT
+        // ==========================================================
+        $salesTrend = Transaction::selectRaw('DATE(created_at) as date, SUM(total) as total, COUNT(*) as count')
+            ->whereBetween('created_at', [Carbon::now()->subDays(6)->startOfDay(), Carbon::now()->endOfDay()])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $trendTotals = $salesTrend->pluck('total')->map(fn ($v) => (float) $v);
+
+        $last7 = $trendTotals->sum();
+        $prev7 = (float) Transaction::whereBetween('created_at', [Carbon::now()->subDays(13)->startOfDay(), Carbon::now()->subDays(7)->startOfDay()])
+            ->sum('total');
+
+        $growth = $prev7 > 0 ? round((($last7 - $prev7) / $prev7) * 100, 1) : ($last7 > 0 ? 100 : 0);
+
+        $bestDay = $salesTrend->sortByDesc('total')->first();
+        $trendDirection = $growth >= 0 ? 'naik' : 'turun';
+
+        $salesTrendInsight = $this->buildTrendInsight($bestDay, $growth, $last7);
+
+        // ==========================================================
+        // 3. PREDIKSI KEBUTUHAN STOK
+        // ==========================================================
+        $stockPredictions = $this->buildStockPredictions();
+
+        // ==========================================================
+        // 4. ANALISIS KEUNTUNGAN USAHA
+        // ==========================================================
+        $profit = $this->buildProfitSummary();
+
         return view('dashboard', compact(
             'salesToday',
             'transactionsToday',
             'productsCount',
             'lowStockProducts',
-            'salesSummary'
+            'salesSummary',
+            'topProducts',
+            'salesTrendInsight',
+            'trendDirection',
+            'growth',
+            'stockPredictions',
+            'profit'
         ));
+    }
+
+    /**
+     * Bangun insight tren penjualan 7 hari.
+     */
+    protected function buildTrendInsight($bestDay, float $growth, float $last7): array
+    {
+        $bestLabel = $bestDay && $bestDay->total ? Carbon::parse($bestDay->date)->format('l') : '-';
+        $bestDate = $bestDay && $bestDay->total ? Carbon::parse($bestDay->date)->format('d M') : '-';
+        $bestTotal = $bestDay && $bestDay->total ? (float) $bestDay->total : 0;
+
+        return [
+            'best_day' => $bestLabel,
+            'best_date' => $bestDate,
+            'best_total' => $bestTotal,
+            'growth' => $growth,
+            'last7' => $last7,
+        ];
+    }
+
+    /**
+     * Prediksi kebutuhan stok: estimasi hari stok habis berdasarkan rata-rata penjualan 30 hari.
+     */
+    protected function buildStockPredictions(): array
+    {
+        $period = 30;
+        $since = Carbon::now()->subDays($period)->startOfDay();
+
+        return Product::where('stock', '>', 0)
+            ->orderBy('stock')
+            ->limit(5)
+            ->get()
+            ->map(function ($product) use ($since, $period) {
+                $sold = (int) TransactionDetail::where('product_id', $product->id)
+                    ->whereHas('transaction', fn ($q) => $q->where('created_at', '>=', $since))
+                    ->sum('quantity');
+
+                $avgDaily = $period > 0 ? ($sold / $period) : 0;
+                $daysLeft = $avgDaily > 0 ? (int) floor($product->stock / $avgDaily) : null;
+
+                return [
+                    'product' => $product,
+                    'sold_30d' => $sold,
+                    'avg_daily' => round($avgDaily, 2),
+                    'days_left' => $daysLeft,
+                ];
+            })
+            ->all();
+    }
+
+    /**
+     * Ringkasan keuntungan usaha (revenue, modal, laba, margin).
+     */
+    protected function buildProfitSummary(): array
+    {
+        $income = (float) Transaction::sum('total');
+
+        $costRow = TransactionDetail::join('products', 'transaction_details.product_id', '=', 'products.id')
+            ->selectRaw('COALESCE(SUM(transaction_details.quantity * products.purchase_price), 0) as cost')
+            ->first();
+
+        $cost = (float) ($costRow->cost ?? 0);
+        $netProfit = $income - $cost;
+        $margin = $income > 0 ? round(($netProfit / $income) * 100, 1) : 0;
+
+        return [
+            'revenue' => $income,
+            'cost' => $cost,
+            'net_profit' => $netProfit,
+            'margin' => $margin,
+        ];
     }
 }

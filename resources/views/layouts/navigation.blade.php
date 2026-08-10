@@ -1,5 +1,5 @@
 <style>
-    .modern-sidebar {
+.modern-sidebar {
 
     width:280px;
     min-height:100vh;
@@ -11,6 +11,28 @@
         #1d4ed8
     );
 
+}
+
+.modern-sidebar .offcanvas-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.35) transparent;
+}
+
+.modern-sidebar .offcanvas-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modern-sidebar .offcanvas-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modern-sidebar .offcanvas-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.28);
+    border-radius: 999px;
+}
+
+.modern-sidebar .offcanvas-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,.5);
 }
 
 
@@ -39,6 +61,11 @@
     box-shadow:
     0 12px 25px rgba(0,0,0,.25);
 
+}
+
+.sidebar-brand-name {
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
 
@@ -144,6 +171,29 @@
 
 }
 
+.ai-assistant-logo {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+
+    border: 2px solid rgba(255,255,255,.7);
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    box-shadow: 0 4px 12px rgba(6,182,212,.4);
+}
+
+.ai-assistant-label {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.sidebar-nav .nav-link:hover .ai-assistant-logo {
+    transform: rotate(-8deg) scale(1.06);
+}
+
 
 
 .logout-btn {
@@ -173,7 +223,7 @@
 
     <div class="offcanvas-header d-lg-none">
         <h5 class="offcanvas-title text-white" id="sidebarMenuLabel">
-            {{ config('app.name', 'Smart UMKM POS') }}
+            SMART UMKM AI
         </h5>
 
         <button type="button" 
@@ -198,12 +248,12 @@
                 </div>
 
 
-                <div>
-                    <div class="fw-bold fs-5">
-                        Smart UMKM AI
+<div>
+                    <div class="sidebar-brand-name fw-bold fs-5">
+                        SMART UMKM AI
                     </div>
 
-                    <div class="small text-white-50">
+                    <div class="small text-white-50 d-none d-sm-block">
                         Point of Sale System
                     </div>
                 </div>
@@ -382,13 +432,17 @@
 
             <li class="nav-item mb-1">
 
-                <a class="nav-link d-flex align-items-center px-3 py-3 
+                <a class="nav-link d-flex flex-column align-items-center justify-content-center px-3 py-3 
                 {{ request()->routeIs('ai-assistant.*') ? 'active' : '' }}" 
-                href="{{ route('ai-assistant.index') }}">
+                href="{{ route('ai-assistant.index') }}"
+                aria-label="AI Assistant"
+                title="AI Assistant">
 
-                    <i class="bi bi-robot me-3"></i>
+                    <img src="{{ asset('images/logo.png') }}"
+                         alt=""
+                         class="ai-assistant-logo">
 
-                    AI Assistant
+                    <span class="ai-assistant-label">AI Asisten</span>
 
                 </a>
 
@@ -421,32 +475,6 @@
 
 
         </ul>
-
-
-
-
-
-
-        <!-- LOGOUT -->
-
-        <div class="px-4 pb-4">
-
-            <form method="POST" action="{{ route('logout') }}">
-
-                @csrf
-
-                <button type="submit" 
-                class="btn logout-btn w-100 text-start py-3">
-
-                    <i class="bi bi-box-arrow-right me-3"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
 
 
     </div>

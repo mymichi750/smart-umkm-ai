@@ -225,6 +225,111 @@
     box-shadow: 0 16px 40px rgba(251, 113, 133, 0.08);
 }
 
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    height: 100%;
+}
+
+.profile-card__title {
+    margin: 0 0 .3rem;
+    color: #0f172a;
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+.profile-card__description {
+    margin: 0;
+    color: #64748b;
+    font-size: .88rem;
+    line-height: 1.55;
+}
+
+.profile-form {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.profile-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+}
+
+.profile-field label {
+    color: #334155;
+    font-size: .86rem;
+    font-weight: 650;
+}
+
+.profile-card__input-wrap {
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.profile-card__input-wrap:focus-within {
+    border-color: #818cf8;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, .12);
+}
+
+.profile-card__footer {
+    margin-top: auto;
+}
+
+.profile-save-status {
+    margin: 0;
+    color: #059669;
+    font-size: .86rem;
+    font-weight: 600;
+}
+
+.profile-danger-zone section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.profile-danger-zone h2 {
+    margin: 0;
+    color: #9f1239;
+    font-size: 1.05rem;
+}
+
+.profile-danger-zone p {
+    margin-bottom: 0;
+    color: #7f1d1d;
+    line-height: 1.55;
+}
+
+@media (max-width: 767.98px) {
+    .profile-hero,
+    .profile-panel,
+    .profile-danger-zone {
+        border-radius: 1.1rem;
+    }
+
+    .profile-hero {
+        padding: 1.25rem;
+    }
+
+    .profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-card__header {
+        align-items: center;
+    }
+}
+
 :root {
     --primary: #3b82f6;
     --primary-soft: #eff6ff;
@@ -257,7 +362,7 @@ body {
 .app-shell {
     min-height: 100vh;
     background: #eef3f7;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .app-sidebar {
@@ -646,6 +751,57 @@ canvas {
     background: rgba(59, 130, 246, 0.12);
 }
 
+/* Tombol CRUD yang digunakan konsisten di seluruh tabel data. */
+.crud-create-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.crud-create-btn:hover,
+.crud-create-btn:focus {
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.28);
+}
+
+.crud-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.crud-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-width: 1px;
+    border-radius: 0.65rem;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.crud-action-btn:hover,
+.crud-action-btn:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(15, 23, 42, 0.12);
+}
+
+.crud-actions form {
+    display: inline-flex;
+}
+
 .auth-shell {
     min-height: 100vh;
     display: flex;
@@ -821,6 +977,10 @@ canvas {
 
 }
 
+.app-main {
+    min-width: 0;
+}
+
 
 
 .brand-title {
@@ -977,4 +1137,239 @@ canvas {
 
     }
 
+}
+
+/* ==========================================================
+   RESPONSIVE / FLUID BREAKPOINTS
+   Mendukung HP, tablet, laptop, dan desktop besar
+   ========================================================== */
+
+/* ---------- Tablet / layar sedang (md ke bawah) ---------- */
+@media (max-width: 991.98px) {
+    .content-wrapper {
+        padding: 1rem;
+    }
+
+    .page-heading {
+        margin-bottom: 1rem;
+    }
+
+    .page-heading h1 {
+        font-size: 1.5rem;
+    }
+
+    .page-heading h2 {
+        font-size: 1.25rem;
+    }
+
+    .main-navbar {
+        padding: 0.75rem 1rem;
+    }
+
+    .dashboard-header {
+        padding: 1.5rem;
+        border-radius: 18px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .icon-box {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Sidebar offcanvas : pastikan tidak meluber */
+    .app-sidebar {
+        flex-basis: auto;
+        max-width: 100%;
+    }
+
+    .offcanvas.offcanvas-start.app-sidebar {
+        width: 280px;
+    }
+}
+
+/* ---------- HP besar / layar kecil (576px ke bawah) ---------- */
+@media (max-width: 575.98px) {
+    .content-wrapper {
+        padding: 0.75rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-header {
+        padding: 1rem;
+    }
+
+    .page-heading h1 {
+        font-size: 1.3rem;
+    }
+
+    .page-heading h2 {
+        font-size: 1.1rem;
+    }
+
+    .page-heading p {
+        font-size: 0.85rem;
+    }
+
+    .dashboard-header {
+        padding: 1.25rem;
+        text-align: center;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .stat-card h3 {
+        font-size: 1.15rem;
+    }
+
+    .stat-card .small {
+        font-size: 0.75rem;
+    }
+
+    .total-box {
+        padding: 1.25rem;
+    }
+
+    .total-box h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Form & tombol lebih ramah sentuhan di HP */
+    .form-control,
+    .form-select {
+        border-radius: 0.75rem;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+    }
+
+    /* Tabel: pastikan tetap di dalam area scroll horizontal */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table th,
+    .table td {
+        white-space: nowrap;
+    }
+
+    /* Navbar mobile */
+    .main-navbar .brand-title {
+        font-size: 1rem;
+    }
+
+    .ai-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+
+    .welcome-text {
+        display: none !important;
+    }
+}
+
+/* ---------- HP sangat kecil (400px ke bawah) ---------- */
+@media (max-width: 400px) {
+    .content-wrapper {
+        padding: 0.5rem;
+    }
+
+    .page-heading h1 {
+        font-size: 1.15rem;
+    }
+
+    .dashboard-header {
+        padding: 1rem;
+    }
+
+    .profile-button span.d-none {
+        display: none !important;
+    }
+}
+
+/* ---------- Layar sangat besar (xl ke atas) ---------- */
+@media (min-width: 1400px) {
+    .content-wrapper {
+        padding: 2rem;
+    }
+
+    .dashboard-content {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* ==========================================================
+   AI BUSINESS ANALYTICS
+   ========================================================== */
+.bg-gradient-light {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.bg-gradient-light .list-group-item {
+    background: transparent;
+}
+
+.ai-analytics-header {
+    padding: 1.15rem 1.25rem;
+    border-bottom: 1px solid #dbeafe;
+    background: linear-gradient(100deg, #eff6ff 0%, #ffffff 72%);
+}
+
+.ai-analytics-title {
+    color: #0f2f6b;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: .01em;
+}
+
+.ai-analytics-title .bi {
+    color: #2563eb;
+}
+
+.ai-analytics-description {
+    color: #334155;
+    font-size: .88rem;
+    font-weight: 500;
+}
+
+.ai-analytics-badge {
+    border: 1px solid #93c5fd;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+/* DESKTOP SIDEBAR FIXED */
+@media (min-width: 992px){
+
+    #sidebarMenu{
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 280px;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 1040;
+    }
+
+    .app-main{
+        margin-left: 280px;
+        min-height: 100vh;
+    }
 }

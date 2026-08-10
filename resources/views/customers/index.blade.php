@@ -5,7 +5,9 @@
                 <h2 class="h4 mb-1">Pelanggan</h2>
                 <p class="text-muted mb-0">Kelola daftar pelanggan Anda.</p>
             </div>
-            <a href="{{ route('customers.create') }}" class="btn btn-success">Tambah Pelanggan</a>
+            <a href="{{ route('customers.create') }}" class="btn crud-create-btn">
+                <i class="bi bi-plus-lg"></i> Tambah Pelanggan
+            </a>
         </div>
     </x-slot>
 
@@ -40,14 +42,16 @@
                                     <td>{{ $customer->email }}</td>
                                     <td>{{ $customer->phone }}</td>
                                     <td>{{ Str::limit($customer->address, 70) }}</td>
-                                    <td>
-                                        <a href="{{ route('customers.show', $customer) }}" class="btn btn-sm btn-outline-secondary">Lihat</a>
-                                        <a href="{{ route('customers.edit', $customer) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Hapus pelanggan ini?');">
+                                    <td class="text-end">
+                                        <div class="crud-actions" role="group" aria-label="Aksi pelanggan">
+                                        <a href="{{ route('customers.show', $customer) }}" class="btn btn-outline-secondary crud-action-btn" title="Lihat detail" aria-label="Lihat detail pelanggan"><i class="bi bi-eye"></i></a>
+                                        <a href="{{ route('customers.edit', $customer) }}" class="btn btn-outline-primary crud-action-btn" title="Edit" aria-label="Edit pelanggan"><i class="bi bi-pencil-square"></i></a>
+                                        <form action="{{ route('customers.destroy', $customer) }}" method="POST" onsubmit="return confirm('Hapus pelanggan ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                                            <button type="submit" class="btn btn-outline-danger crud-action-btn" title="Hapus" aria-label="Hapus pelanggan"><i class="bi bi-trash"></i></button>
                                         </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

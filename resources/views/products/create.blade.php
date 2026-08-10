@@ -12,7 +12,7 @@
         @include('partials.alerts')
         <div class="card shadow-sm">
             <div class="card-body">
-                <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('products.store') }}" method="POST">
                     @csrf
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -51,11 +51,7 @@
                                 <option value="0">Nonaktif</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Gambar Produk</label>
-                            <input type="file" name="image" class="form-control">
-                        </div>
-                        <div class="col-12">
+<div class="col-12">
                             <label class="form-label">Deskripsi</label>
                             <textarea name="description" rows="4" class="form-control">{{ old('description') }}</textarea>
                         </div>

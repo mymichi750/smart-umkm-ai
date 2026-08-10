@@ -5,7 +5,9 @@
                 <h2 class="h4 mb-1">Kategori</h2>
                 <p class="text-muted mb-0">Kelola kategori produk.</p>
             </div>
-            <a href="{{ route('categories.create') }}" class="btn btn-success">Tambah Kategori</a>
+            <a href="{{ route('categories.create') }}" class="btn crud-create-btn">
+                <i class="bi bi-plus-lg"></i> Tambah Kategori
+            </a>
         </div>
     </x-slot>
 
@@ -28,20 +30,22 @@
                                     <td>{{ $category->name }}</td>
                                     <td>{{ Str::limit($category->description, 80) }}</td>
                                     <td class="text-end">
-    <div class="btn-group shadow-sm" role="group">
+    <div class="crud-actions" role="group" aria-label="Aksi kategori">
 
         <a href="{{ route('categories.show', $category) }}"
-           class="btn btn-light border"
+           class="btn btn-outline-secondary crud-action-btn"
            data-bs-toggle="tooltip"
-           title="Lihat Detail">
+           title="Lihat Detail"
+           aria-label="Lihat detail kategori">
 
             <i class="bi bi-eye"></i>
         </a>
 
         <a href="{{ route('categories.edit', $category) }}"
-           class="btn btn-primary"
+           class="btn btn-outline-primary crud-action-btn"
            data-bs-toggle="tooltip"
-           title="Edit">
+           title="Edit"
+           aria-label="Edit kategori">
 
             <i class="bi bi-pencil-square"></i>
         </a>
@@ -55,9 +59,10 @@
             @method('DELETE')
 
             <button type="submit"
-                    class="btn btn-danger"
+                    class="btn btn-outline-danger crud-action-btn"
                     data-bs-toggle="tooltip"
-                    title="Hapus">
+                    title="Hapus"
+                    aria-label="Hapus kategori">
 
                 <i class="bi bi-trash"></i>
             </button>
@@ -106,14 +111,6 @@
 
 #categoriesTable td{
     vertical-align:middle;
-}
-
-.btn-group .btn{
-    padding:.45rem .8rem;
-}
-
-.btn-group .btn i{
-    font-size:.9rem;
 }
 
 .pagination{

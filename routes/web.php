@@ -11,19 +11,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Services\GeminiService;
+
 Route::get('/', function () {
     return view('welcome');
-});
-
-
-
-Route::get('/test-ai', function(GeminiService $gemini){
-
-    return $gemini->generate(
-        "Berikan ide promosi untuk UMKM kopi"
-    );
-
 });
 
 

@@ -1,16 +1,16 @@
-<section class="space-y-6">
+<section class="profile-section">
     <header class="profile-card__header">
         <div class="profile-card__heading">
             <div class="profile-card__icon">
                 <i class="bi bi-person-lines-fill"></i>
             </div>
             <div>
-                <h2 class="text-lg font-semibold text-slate-900">
-                    {{ __('Profile Information') }}
+                <h2 class="profile-card__title">
+                    Informasi Profil
                 </h2>
 
-                <p class="mt-1 text-sm text-slate-600">
-                    {{ __("Update your account's profile information and email address.") }}
+                <p class="profile-card__description">
+                    Kelola nama dan alamat email yang digunakan pada akun Anda.
                 </p>
             </div>
         </div>
@@ -23,21 +23,21 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="space-y-5">
+    <form method="post" action="{{ route('profile.update') }}" class="profile-form">
         @csrf
         @method('patch')
 
-        <div class="grid gap-5 md:grid-cols-2">
-            <div class="space-y-2">
-                <x-input-label for="name" :value="__('Name')" class="text-sm font-semibold text-slate-700" />
+        <div class="profile-form-grid">
+            <div class="profile-field">
+                <x-input-label for="name" value="Nama Lengkap" />
                 <div class="profile-card__input-wrap">
                     <x-text-input id="name" name="name" type="text" class="profile-card__input mt-0" :value="old('name', $user->name)" required autofocus autocomplete="name" />
                 </div>
                 <x-input-error class="mt-2" :messages="$errors->get('name')" />
             </div>
 
-            <div class="space-y-2">
-                <x-input-label for="email" :value="__('Email')" class="text-sm font-semibold text-slate-700" />
+            <div class="profile-field">
+                <x-input-label for="email" value="Email" />
                 <div class="profile-card__input-wrap">
                     <x-text-input id="email" name="email" type="email" class="profile-card__input mt-0" :value="old('email', $user->email)" required autocomplete="username" />
                 </div>
@@ -71,13 +71,7 @@
                 </x-primary-button>
 
                 @if (session('status') === 'profile-updated')
-                    <p
-                        x-data="{ show: true }"
-                        x-show="show"
-                        x-transition
-                        x-init="setTimeout(() => show = false, 2000)"
-                        class="text-sm text-slate-600"
-                    >{{ __('Saved.') }}</p>
+                    <p class="profile-save-status"><i class="bi bi-check-circle-fill me-1"></i>Profil berhasil disimpan.</p>
                 @endif
             </div>
         </div>

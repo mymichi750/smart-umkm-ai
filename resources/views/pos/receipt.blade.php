@@ -5,7 +5,14 @@
                 <h2 class="h4 mb-1">Struk Transaksi</h2>
                 <p class="text-muted mb-0">Cetak struk atau simpan sebagai PDF.</p>
             </div>
-            <button onclick="window.print()" class="btn btn-outline-primary">Cetak</button>
+            <div class="d-flex gap-2">
+                <a href="{{ route('pos.index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Kembali ke Kasir
+                </a>
+                <button type="button" onclick="window.print()" class="btn btn-outline-primary">
+                    <i class="bi bi-printer me-1"></i>Cetak
+                </button>
+            </div>
         </div>
     </x-slot>
 
