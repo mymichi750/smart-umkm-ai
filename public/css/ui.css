@@ -369,8 +369,11 @@ body {
     flex: 0 0 280px;
     max-width: 280px;
     min-height: 100vh;
-    position: relative;
+    /* Sidebar tidak boleh masuk ke alur dokumen: pada mobile ia adalah
+       offcanvas, dan pada desktop ia sidebar tetap. */
+    position: fixed;
     top: 0;
+    left: 0;
     background: linear-gradient(180deg, rgba(59,130,246,0.95), rgba(37,99,235,0.95));
     box-shadow: 0 36px 90px rgba(15, 23, 42, 0.15);
 }
@@ -918,6 +921,98 @@ canvas {
     box-shadow: 0 18px 40px rgba(59, 130, 246, 0.18);
 }
 
+/* Halaman autentikasi: satu kartu yang ringkas di mobile dan dapat discroll. */
+.auth-page {
+    min-height: 100dvh;
+    padding: clamp(.75rem, 3vw, 2rem);
+}
+
+.auth-page .auth-card {
+    margin: auto;
+}
+
+@media (max-width: 991.98px) {
+    .auth-page {
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .auth-page .auth-card {
+        width: min(100%, 34rem);
+        border-radius: 1.25rem;
+    }
+
+    .auth-page .auth-hero {
+        display: none !important;
+    }
+
+    .auth-page .auth-form {
+        padding: clamp(1.25rem, 5vw, 2rem) !important;
+    }
+
+    .auth-page-register .auth-form > .d-lg-none {
+        display: none !important;
+    }
+
+    .auth-page-register .register-wrapper {
+        width: 100%;
+        min-height: 0;
+        height: auto;
+        padding: 0;
+    }
+
+    .auth-page-register .register-card {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .auth-page {
+        padding: .5rem;
+    }
+
+    .auth-page .auth-card {
+        border-radius: 1rem;
+    }
+
+    .auth-page .auth-form {
+        padding: 1.25rem !important;
+    }
+
+    .auth-page .auth-form .form-control,
+    .auth-page-register .form-control {
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    .auth-page-login .auth-login-form {
+        margin-top: 0;
+    }
+
+    .auth-page-login .auth-login-form .d-flex {
+        align-items: flex-start !important;
+    }
+
+    .auth-page-register .register-header h2 {
+        font-size: 1.2rem;
+        line-height: 1.3;
+    }
+
+    .auth-page-register .register-header p {
+        font-size: .85rem;
+    }
+
+    .auth-page-register .register-btn {
+        min-height: 48px;
+    }
+}
+
 .profile-card {
     background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     border: 1px solid rgba(148, 163, 184, 0.14);
@@ -1355,6 +1450,62 @@ canvas {
     font-weight: 700;
 }
 
+/* Tipografi panel AI dibuat lebih mudah dibaca pada semua ukuran layar. */
+.ai-analytics-card .ai-analytics-title {
+    font-size: clamp(1.25rem, 1.4vw, 1.55rem);
+    line-height: 1.3;
+}
+
+.ai-analytics-card .ai-analytics-description {
+    font-size: clamp(.95rem, 1vw, 1.05rem);
+    line-height: 1.55;
+}
+
+.ai-analytics-card .ai-analytics-badge {
+    font-size: .9rem;
+}
+
+.ai-analytics-card .bg-gradient-light .card-body {
+    font-size: 1rem;
+}
+
+.ai-analytics-card .bg-gradient-light h6 {
+    font-size: 1.12rem;
+    line-height: 1.4;
+}
+
+.ai-analytics-card .small,
+.ai-analytics-card small {
+    font-size: .9rem !important;
+}
+
+.ai-analytics-card [style*="font-size:0.75rem"] {
+    font-size: .85rem !important;
+    line-height: 1.45;
+}
+
+.ai-analytics-card .badge {
+    font-size: .82rem;
+}
+
+@media (max-width: 575.98px) {
+    .ai-analytics-card .ai-analytics-header {
+        padding: 1rem;
+    }
+
+    .ai-analytics-card .ai-analytics-title {
+        font-size: 1.2rem;
+    }
+
+    .ai-analytics-card .bg-gradient-light .card-body {
+        font-size: .95rem;
+    }
+
+    .ai-analytics-card .bg-gradient-light h6 {
+        font-size: 1.05rem;
+    }
+}
+
 /* DESKTOP SIDEBAR FIXED */
 @media (min-width: 992px){
 
@@ -1371,5 +1522,267 @@ canvas {
     .app-main{
         margin-left: 280px;
         min-height: 100vh;
+    }
+}
+
+/* ==========================================================
+   LAYOUT FOUNDATION
+   Satu sumber aturan untuk sidebar dan area konten. Bootstrap
+   menangani offcanvas di bawah lg; desktop memakai sidebar tetap.
+   ========================================================== */
+:root {
+    --sidebar-width: 280px;
+}
+
+html,
+body {
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.app-shell,
+.app-main,
+.content-wrapper,
+.dashboard-content,
+.container-fluid {
+    min-width: 0;
+}
+
+.app-main {
+    width: 100%;
+}
+
+.sidebar .offcanvas-body {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.sidebar-brand-name,
+.sidebar-user h6 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-user .d-flex > div:last-child {
+    min-width: 0;
+}
+
+/* Tablet dan ponsel: sidebar menjadi panel overlay dengan lebar fluid. */
+@media (max-width: 991.98px) {
+    .app-shell {
+        display: block !important;
+    }
+
+    .app-main {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+
+    .offcanvas.offcanvas-start.app-sidebar {
+        --bs-offcanvas-width: min(88vw, 20rem);
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: min(88vw, 20rem);
+        max-width: min(88vw, 20rem);
+        min-height: 100dvh;
+        height: 100dvh;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .app-sidebar,
+    .modern-sidebar {
+        flex-basis: auto;
+        min-height: 100dvh;
+    }
+
+    .sidebar .offcanvas-body {
+        flex: 1 1 auto;
+        height: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+
+    .main-navbar {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .main-navbar .container-fluid {
+        flex-wrap: nowrap;
+        gap: .5rem;
+        padding: 0;
+    }
+
+    .main-navbar .ms-auto {
+        gap: .5rem !important;
+    }
+
+    .profile-button {
+        padding: .35rem;
+    }
+
+    .sidebar-brand,
+    .sidebar-user,
+    .sidebar-nav {
+        margin-left: .75rem !important;
+        margin-right: .75rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: auto;
+    }
+
+    .sidebar .nav-pills .nav-link {
+        min-height: 50px;
+        padding: .75rem 1rem;
+    }
+
+    .sidebar-nav .nav-link:hover {
+        transform: none;
+    }
+
+    .card-header,
+    .card-body {
+        overflow-wrap: anywhere;
+    }
+
+    .d-flex > .btn:not(.btn-icon),
+    form .d-flex > .btn:not(.btn-icon) {
+        min-width: 0;
+    }
+}
+
+/* Desktop: sidebar tetap, konten mengambil sisa lebar viewport tanpa overflow. */
+@media (min-width: 992px) {
+    .app-shell {
+        display: block !important;
+    }
+
+    #sidebarMenu {
+        width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
+        height: 100dvh;
+    }
+
+    .app-main {
+        width: calc(100% - var(--sidebar-width));
+        margin-left: var(--sidebar-width) !important;
+    }
+
+    /* Class .offcanvas diperlukan agar tombol X bekerja di mobile, tetapi
+       pada desktop sidebar harus selalu tampak seperti navigasi tetap. */
+    #sidebarMenu.app-sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        display: block !important;
+        visibility: visible !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+    #sidebarMenu.app-sidebar .offcanvas-header {
+        display: none !important;
+    }
+
+    #sidebarMenu.app-sidebar .offcanvas-body {
+        display: flex !important;
+        height: 100% !important;
+        overflow-y: auto !important;
+    }
+}
+
+/* Perlindungan elemen konten terhadap layar sempit. */
+img,
+svg,
+canvas {
+    max-width: 100%;
+}
+
+canvas {
+    display: block;
+}
+
+.table-responsive {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+}
+
+.table-responsive > .table {
+    margin-bottom: 0;
+}
+
+.stat-card .d-flex > :first-child,
+.list-group-item > :first-child,
+.card-header > :first-child {
+    min-width: 0;
+}
+
+.stat-card .icon-box,
+.list-group-item .progress,
+.list-group-item .badge {
+    flex-shrink: 0;
+}
+
+@media (max-width: 575.98px) {
+    .content-wrapper > .dashboard-content > .container-fluid {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .page-heading {
+        padding: .75rem 0;
+    }
+
+    .page-heading h1,
+    .page-heading h2 {
+        line-height: 1.25;
+    }
+
+    .card {
+        border-radius: 1rem;
+    }
+
+    .card-header.d-flex,
+    .page-heading > .d-flex,
+    .content-wrapper .d-flex.justify-content-between {
+        flex-wrap: wrap;
+    }
+
+    .card-header.d-flex {
+        align-items: flex-start !important;
+    }
+
+    .content-wrapper form .d-flex.gap-2,
+    .content-wrapper .mt-4.d-flex.gap-2 {
+        flex-wrap: wrap;
+    }
+
+    .content-wrapper .mt-4.d-flex.gap-2 > .btn,
+    .content-wrapper form .d-flex.gap-2 > .btn {
+        flex: 1 1 9rem;
+    }
+
+    .list-group-item.d-flex {
+        align-items: flex-start !important;
+        gap: .5rem;
+    }
+
+    .list-group-item.d-flex > .d-flex {
+        padding-top: .15rem;
+    }
+
+    .list-group-item strong,
+    .card-body,
+    .card-header {
+        overflow-wrap: anywhere;
     }
 }

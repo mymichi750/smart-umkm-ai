@@ -218,8 +218,81 @@
     color:white;
 
 }
+
+/* Aturan ini diletakkan bersama komponen sidebar agar tidak dikalahkan
+   oleh style lama ketika layout dibuka pada perangkat kecil. */
+@media (max-width: 991.98px) {
+    .offcanvas.offcanvas-start.app-sidebar.modern-sidebar {
+        --bs-offcanvas-width: min(88vw, 20rem);
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: min(88vw, 20rem);
+        max-width: min(88vw, 20rem);
+        min-height: 100dvh;
+        height: 100dvh;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .modern-sidebar .offcanvas-body {
+        display: flex;
+        flex: 1 1 auto;
+        height: auto !important;
+        min-height: 0;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .modern-sidebar .offcanvas-header {
+        padding: .9rem 1rem;
+    }
+
+    .modern-sidebar .sidebar-brand {
+        margin: 0 .75rem 1rem !important;
+        padding: 0 0 1rem !important;
+    }
+
+    .modern-sidebar .sidebar-user {
+        margin: 0 .75rem 1rem !important;
+        padding: .75rem !important;
+    }
+
+    .modern-sidebar .sidebar-nav {
+        margin: 0 .75rem 1rem !important;
+        padding: 0 !important;
+    }
+
+    .modern-sidebar .sidebar-brand-name {
+        font-size: 1rem !important;
+    }
+
+    .modern-sidebar .brand-mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        font-size: 1.2rem;
+        flex: 0 0 42px;
+    }
+
+    .modern-sidebar .sidebar-nav .nav-link {
+        min-height: 48px;
+        margin-bottom: .35rem;
+        padding: .7rem .85rem !important;
+    }
+
+    .modern-sidebar .ai-assistant-logo {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+    }
+}
 </style>
-<div class="offcanvas-lg offcanvas-start sidebar app-sidebar modern-sidebar" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+<div class="offcanvas offcanvas-lg offcanvas-start sidebar app-sidebar modern-sidebar" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
 
     <div class="offcanvas-header d-lg-none">
         <h5 class="offcanvas-title text-white" id="sidebarMenuLabel">
@@ -229,6 +302,7 @@
         <button type="button" 
                 class="btn-close btn-close-white" 
                 data-bs-dismiss="offcanvas" 
+                data-bs-target="#sidebarMenu"
                 aria-label="Close">
         </button>
     </div>

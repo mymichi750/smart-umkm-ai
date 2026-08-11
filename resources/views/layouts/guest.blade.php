@@ -14,9 +14,9 @@
         <!-- Styles -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.4/font/bootstrap-icons.css" />
-        <link rel="stylesheet" href="/css/ui.css" />
+        <link rel="stylesheet" href="{{ asset('css/ui.css') }}?v={{ filemtime(public_path('css/ui.css')) }}" />
     </head>
-    <body class="auth-shell">
+    <body {{ $attributes->class(['auth-shell']) }}>
         <div class="auth-card d-grid gap-0 gap-lg-4">
             <div class="auth-hero d-flex flex-column justify-content-between p-5 text-white">
                 <div>

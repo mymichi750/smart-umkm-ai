@@ -42,7 +42,7 @@
                     </div>
                 </div>
 
-                <div class="chat-shell p-3 p-md-4" id="chatShell" style="height: 70vh; overflow-y: auto; background: #f8fbff;">
+                <div class="chat-shell p-3 p-md-4" id="chatShell" style="overflow-y: auto; background: #f8fbff;">
                     @php($messages = $messages ?? [])
                     @if (empty($messages))
                         <div class="d-flex justify-content-start mb-3">
@@ -160,6 +160,10 @@
             }
 
             @media (max-width: 575.98px) {
+                .chat-shell {
+                    height: 52vh;
+                    min-height: 320px;
+                }
                 .chat-bubble {
                     max-width: 95%;
                     padding: 0.75rem 0.85rem;
@@ -175,6 +179,10 @@
                 #messageInput {
                     font-size: 0.9rem;
                 }
+            }
+
+            @media (min-width: 576px) {
+                .chat-shell { height: 70vh; }
             }
         </style>
     @endpush

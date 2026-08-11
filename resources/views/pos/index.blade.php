@@ -2,7 +2,7 @@
 
 <x-slot name="header">
 
-<div class="d-flex justify-content-between align-items-center">
+<div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
 
 <div>
 
@@ -18,7 +18,7 @@ Kelola transaksi UMKM lebih cepat dengan Smart UMKM AI.
 </div>
 
 
-<div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+<div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill align-self-start align-self-sm-auto">
 
 <i class="bi bi-lightning-charge me-1"></i>
 Point Of Sale

@@ -137,7 +137,7 @@
              ========================================================== -->
         <div class="row g-4 mt-1">
             <div class="col-12">
-                <div class="card shadow-sm border-0">
+                <div class="card shadow-sm border-0 ai-analytics-card">
                     <div class="card-header ai-analytics-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div>
                             <h5 class="ai-analytics-title mb-1">

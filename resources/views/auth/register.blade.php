@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout class="auth-page auth-page-register">
 
 <div class="register-wrapper">
 
@@ -295,11 +295,11 @@
 
 /* Register page: keep the form compact and precisely within the viewport. */
 body:has(.register-wrapper) {
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 body:has(.register-wrapper) .auth-card {
-    max-height: calc(100dvh - 32px);
+    max-height: none;
 }
 
 body:has(.register-wrapper) .auth-form {
@@ -313,7 +313,7 @@ body:has(.register-wrapper) .auth-form > .d-lg-none {
 
 .register-wrapper {
     min-height: 0;
-    height: 100%;
+    height: auto;
     padding: 0;
 }
 

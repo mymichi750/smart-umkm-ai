@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout class="auth-page auth-page-login">
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}" class="auth-login-form">

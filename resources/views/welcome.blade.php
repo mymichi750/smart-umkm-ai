@@ -108,8 +108,45 @@
         }
 
         @media(max-width:768px){
+            .welcome-shell{
+                align-items:flex-start;
+            }
+
+            .welcome-shell .container{
+                padding-top:2.5rem !important;
+                padding-bottom:2.5rem !important;
+            }
+
             .hero-title{
                 font-size:2rem;
+            }
+
+            .hero-subtitle{
+                font-size:1rem;
+            }
+
+            .preview-card{
+                padding:1rem;
+                border-radius:18px;
+            }
+
+            .feature-card{
+                padding:1.25rem;
+            }
+        }
+
+        @media(max-width:420px){
+            .hero-title{
+                font-size:1.7rem;
+            }
+
+            .welcome-badge{
+                padding:8px 14px;
+                font-size:.9rem;
+            }
+
+            .welcome-shell .btn{
+                width:100%;
             }
         }
     </style>

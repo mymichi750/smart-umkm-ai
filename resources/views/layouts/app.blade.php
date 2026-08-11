@@ -29,7 +29,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.4/font/bootstrap-icons.css">
 
 
-    <link rel="stylesheet" href="/css/ui.css">
+    {{-- ui.css adalah stylesheet dashboard yang aktif. Parameter versi mencegah
+         browser memakai CSS lama setelah layout diperbarui. --}}
+    <link rel="stylesheet" href="{{ asset('css/ui.css') }}?v={{ filemtime(public_path('css/ui.css')) }}">
 
 
     @stack('styles')
@@ -64,7 +66,9 @@
                 class="btn sidebar-toggle d-lg-none"
                 type="button"
                 data-bs-toggle="offcanvas"
-                data-bs-target="#sidebarMenu">
+                data-bs-target="#sidebarMenu"
+                aria-controls="sidebarMenu"
+                aria-label="Buka menu navigasi">
 
                     <i class="bi bi-list"></i>
 
@@ -259,6 +263,22 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('sidebarMenu');
+        if (!sidebar || !window.bootstrap) return;
+
+        // Pada layar kecil, tutup menu setelah pengguna memilih halaman.
+        sidebar.querySelectorAll('a.nav-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.matchMedia('(max-width: 991.98px)').matches) {
+                    bootstrap.Offcanvas.getOrCreateInstance(sidebar).hide();
+                }
+            });
+        });
+    });
+</script>
 
 
 @stack('scripts')
