@@ -10,6 +10,7 @@ use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\ValidationException;
 
 class PosController extends Controller
 {
@@ -28,6 +29,15 @@ class PosController extends Controller
         $quantity = max(1, (int) $request->quantity);
 
         $cart = Session::get('pos.cart', []);
+        $cartQuantity = $cart[$product->id]['quantity'] ?? 0;
+
+        if ($product->stock < 1) {
+            return back()->with('error', "Produk {$product->name} sedang habis.");
+        }
+
+        if (($cartQuantity + $quantity) > $product->stock) {
+            return back()->with('error', "Stok {$product->name} hanya tersedia {$product->stock}.");
+        }
 
         if (isset($cart[$product->id])) {
             $cart[$product->id]['quantity'] += $quantity;
@@ -55,6 +65,10 @@ class PosController extends Controller
 
         if (! isset($cart[$product->id])) {
             return back()->with('error', 'Produk tidak ditemukan di keranjang.');
+        }
+
+        if ($quantity > $product->stock) {
+            return back()->with('error', "Stok {$product->name} hanya tersedia {$product->stock}.");
         }
 
         $cart[$product->id]['quantity'] = $quantity;
@@ -93,33 +107,51 @@ class PosController extends Controller
             return back()->with('error', 'Jumlah uang pelanggan kurang.');
         }
 
-        DB::transaction(function () use ($request, $items, $total, $paid, $change, &$transaction) {
-            $transaction = Transaction::create([
-                'user_id' => auth()->id(),
-                'customer_id' => $request->customer_id,
-                'invoice' => 'INV'.now()->format('YmdHis').rand(100, 999),
-                'total' => $total,
-                'paid' => $paid,
-                'change' => $change,
-                'items_count' => $items->sum('quantity'),
-                'notes' => $request->notes,
-            ]);
+        try {
+            DB::transaction(function () use ($request, $items, $total, $paid, $change, &$transaction) {
+                $products = [];
 
-            foreach ($items as $item) {
-                TransactionDetail::create([
-                    'transaction_id' => $transaction->id,
-                    'product_id' => $item['id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                    'subtotal' => $item['subtotal'],
+                foreach ($items as $item) {
+                    $product = Product::lockForUpdate()->find($item['id']);
+
+                    if (! $product || $product->stock < $item['quantity']) {
+                        $name = $product?->name ?? $item['name'];
+                        $availableStock = $product?->stock ?? 0;
+
+                        throw ValidationException::withMessages([
+                            'stock' => "Stok {$name} hanya tersedia {$availableStock}.",
+                        ]);
+                    }
+
+                    $products[$item['id']] = $product;
+                }
+
+                $transaction = Transaction::create([
+                    'user_id' => auth()->id(),
+                    'customer_id' => $request->customer_id,
+                    'invoice' => 'INV'.now()->format('YmdHis').rand(100, 999),
+                    'total' => $total,
+                    'paid' => $paid,
+                    'change' => $change,
+                    'items_count' => $items->sum('quantity'),
+                    'notes' => $request->notes,
                 ]);
 
-                $product = Product::find($item['id']);
-                if ($product) {
-                    $product->decrement('stock', $item['quantity']);
+                foreach ($items as $item) {
+                    TransactionDetail::create([
+                        'transaction_id' => $transaction->id,
+                        'product_id' => $item['id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                        'subtotal' => $item['subtotal'],
+                    ]);
+
+                    $products[$item['id']]->decrement('stock', $item['quantity']);
                 }
-            }
-        });
+            });
+        } catch (ValidationException $exception) {
+            return back()->with('error', $exception->errors()['stock'][0]);
+        }
 
         Session::forget('pos.cart');
         Session::put('pos.last_transaction', $transaction->id);

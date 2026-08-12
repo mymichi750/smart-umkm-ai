@@ -22,6 +22,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/ai-assistant', [AIAssistantController::class, 'index'])->name('ai-assistant.index');
     Route::post('/admin/ai-assistant/send', [AIAssistantController::class, 'send'])->name('ai-assistant.send');
+    Route::delete('/admin/ai-assistant/messages', [AIAssistantController::class, 'clearChat'])->name('ai-assistant.clear');
 
     Route::middleware(['kasir'])->group(function () {
         Route::resource('products', ProductController::class);

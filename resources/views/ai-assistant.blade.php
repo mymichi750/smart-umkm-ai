@@ -29,7 +29,14 @@
                             </div>
                         </div>
                         <div class="col-lg-4 text-lg-end">
-                            <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                            <div class="d-flex flex-wrap gap-2 justify-content-lg-end align-items-center">
+                                <form action="{{ route('ai-assistant.clear') }}" method="POST" onsubmit="return confirm('Hapus seluruh riwayat chat?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus riwayat chat" aria-label="Hapus riwayat chat">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                                 <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk terlaris saya">Produk terlaris saya</button>
                                 <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Ide promosi hari ini">Ide promosi hari ini</button>
                             </div>

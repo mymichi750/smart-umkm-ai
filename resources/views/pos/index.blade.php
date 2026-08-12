@@ -159,10 +159,11 @@ placeholder="Cari produk...">
         value="1">
 
     <button
-        class="btn btn-primary btn-add-cart w-100">
+        class="btn btn-primary btn-add-cart w-100"
+        @disabled($product->stock < 1)>
 
         <i class="bi bi-cart-plus me-1"></i>
-        Tambah
+        {{ $product->stock < 1 ? 'Stok Habis' : 'Tambah' }}
 
     </button>
 
