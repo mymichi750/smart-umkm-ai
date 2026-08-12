@@ -37,13 +37,13 @@
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk terlaris saya">Produk terlaris saya</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Ide promosi hari ini">Ide promosi hari ini</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Berapa jumlah transaksi dan omzet saya hari ini?">Transaksi hari ini</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk apa yang paling laris dalam 30 hari terakhir?">Produk terlaris</button>
                             </div>
                             <div class="d-flex flex-wrap gap-2 justify-content-lg-end mt-2">
-                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Analisis penjualan saya berdasarkan data 30 hari terakhir">Analisis penjualan</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk apa yang stoknya menipis dan perlu segera diisi?">Stok menipis</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Strategi meningkatkan omzet">Strategi meningkatkan omzet</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk apa yang stoknya habis atau menipis?">Stok perlu diisi</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk mana yang perlu saya restok lebih dulu berdasarkan stok dan penjualan?">Prioritas restok</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Analisis penjualan saya berdasarkan data transaksi 30 hari terakhir.">Analisis transaksi</button>
                             </div>
                         </div>
                     </div>

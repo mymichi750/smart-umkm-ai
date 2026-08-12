@@ -197,7 +197,7 @@ PROMPT;
                     'body' => $response->body(),
                 ]);
 
-                return 'Maaf, saya tidak dapat terhubung ke Gemini saat ini. Silakan cek key API atau coba beberapa saat lagi.';
+                return 'Maaf, layanan AI saat ini sudah mencapai batas penggunaan. Anda perlu menggunakan paket premium untuk dapat mengajukan pertanyaan lagi.';
             }
 
             $reply = data_get($response->json(), 'candidates.0.content.parts.0.text');
