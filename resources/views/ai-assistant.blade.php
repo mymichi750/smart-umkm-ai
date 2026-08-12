@@ -267,6 +267,13 @@ body.innerHTML = content;
                     });
                 });
 
+                messageInput.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        chatForm.requestSubmit();
+                    }
+                });
+
                 document.querySelectorAll('.quick-question').forEach(function (button) {
                     button.addEventListener('click', function () {
                         messageInput.value = this.dataset.message;

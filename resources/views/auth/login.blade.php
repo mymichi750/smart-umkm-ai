@@ -17,7 +17,12 @@
 
         <div class="mb-4">
             <x-input-label for="password" :value="__('Password')" class="form-label" />
-            <x-text-input id="password" class="form-control form-control-lg" type="password" name="password" required autocomplete="current-password" />
+            <div class="input-group input-group-lg">
+                <x-text-input id="password" class="form-control" type="password" name="password" required autocomplete="current-password" />
+                <button id="togglePassword" class="btn btn-outline-secondary" type="button" title="Tampilkan password" aria-label="Tampilkan password" aria-pressed="false">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
@@ -37,4 +42,17 @@
 
         <p class="text-center text-muted mb-0">Belum punya akun? <a href="{{ route('register') }}" class="text-primary text-decoration-none">Daftar sekarang</a></p>
     </form>
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const isHidden = passwordInput.type === 'password';
+
+            passwordInput.type = isHidden ? 'text' : 'password';
+            this.setAttribute('aria-pressed', String(isHidden));
+            this.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+            this.setAttribute('title', isHidden ? 'Sembunyikan password' : 'Tampilkan password');
+            this.querySelector('i').className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+        });
+    </script>
 </x-guest-layout>

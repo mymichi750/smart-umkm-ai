@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use League\CommonMark\CommonMarkConverter;
 
 class AIAssistantController extends Controller
@@ -33,7 +32,7 @@ class AIAssistantController extends Controller
     public function testGemini(Request $request)
     {
         $apiKey = config('services.gemini.key');
-        $model = config('services.gemini.model', 'gemini-flash-latest');
+        $model = config('services.gemini.model', 'gemini-3.5-flash-lite');
 
         if (blank($apiKey)) {
             return response()->json([
@@ -43,9 +42,7 @@ class AIAssistantController extends Controller
         }
 
         try {
-            $response = Http::connectTimeout(5)
-                ->timeout(15)
-                ->retry(3, 750, throw: false)
+            $response = Http::timeout(60)
                 ->asJson()
                 ->post('https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent?key=' . $apiKey, [
                     'contents' => [
@@ -133,10 +130,10 @@ $reply = $converter->convert($reply)->getContent();
     protected function generateReply(string $message): string
     {
         $apiKey = config('services.gemini.key');
-        $model = config('services.gemini.model', 'gemini-flash-latest');
+        $model = config('services.gemini.model', 'gemini-3.5-flash-lite');
 
         if (blank($apiKey)) {
-            return $this->generateFallbackReply($message);
+            return 'Maaf, API key Gemini belum dikonfigurasi. Silakan isi GEMINI_API_KEY di file .env agar fitur AI bisa berjalan.';
         }
 
         $systemPrompt = <<<'PROMPT'
@@ -176,9 +173,7 @@ Pertanyaan pengguna: {$message}
 PROMPT;
 
         try {
-            $response = Http::connectTimeout(5)
-                ->timeout(15)
-                ->retry(3, 750, throw: false)
+            $response = Http::timeout(60)
                 ->asJson()
                 ->post(
                     'https://generativelanguage.googleapis.com/v1beta/models/' . $model . ':generateContent?key=' . $apiKey,
@@ -202,66 +197,21 @@ PROMPT;
                     'body' => $response->body(),
                 ]);
 
-                return $this->generateFallbackReply($message);
+                return 'Maaf, saya tidak dapat terhubung ke Gemini saat ini. Silakan cek key API atau coba beberapa saat lagi.';
             }
 
             $reply = data_get($response->json(), 'candidates.0.content.parts.0.text');
 
             return ! empty($reply)
                 ? trim($reply)
-                : $this->generateFallbackReply($message);
+                : 'Maaf, saya belum bisa merespons permintaan Anda saat ini.';
         } catch (\Throwable $exception) {
             Log::error('Gemini AI exception', [
                 'message' => $exception->getMessage(),
             ]);
 
-            return $this->generateFallbackReply($message);
+            return 'Maaf, terjadi kesalahan saat menghubungkan AI. Silakan coba lagi.';
         }
-    }
-
-    /**
-     * Keeps the assistant useful when the external AI service is unavailable.
-     */
-    protected function generateFallbackReply(string $message): string
-    {
-        $context = json_decode($this->buildBusinessContext(), true) ?: [];
-        $normalizedMessage = Str::lower($message);
-
-        if (Str::contains($normalizedMessage, ['stok', 'persediaan'])) {
-            $lowStockProducts = collect($context['stok_menipis'] ?? []);
-
-            if ($lowStockProducts->isEmpty()) {
-                return 'Stok produk aktif saat ini berada di atas batas pemantauan 5 unit. Tetap pantau stok di dashboard agar ketersediaan produk terjaga.';
-            }
-
-            $products = $lowStockProducts
-                ->take(3)
-                ->map(fn (array $product) => "{$product['nama']} ({$product['stok']} stok)")
-                ->implode(', ');
-
-            return "Produk yang perlu segera diperhatikan: {$products}. Prioritaskan pengadaan untuk produk dengan stok paling rendah agar penjualan tidak terhenti.";
-        }
-
-        if (Str::contains($normalizedMessage, ['terlaris', 'produk', 'penjualan', 'omzet'])) {
-            $topProducts = collect($context['produk_terlaris_30_hari'] ?? []);
-
-            if ($topProducts->isNotEmpty()) {
-                $products = $topProducts
-                    ->take(3)
-                    ->map(fn (array $product) => "{$product['nama']} ({$product['terjual']} terjual)")
-                    ->implode(', ');
-
-                return "Berdasarkan data 30 hari terakhir, produk dengan penjualan tertinggi adalah {$products}. Fokuskan ketersediaan stok dan promosi pada produk-produk tersebut.";
-            }
-
-            return 'Belum ada data penjualan yang cukup untuk dianalisis. Setelah transaksi tercatat, saya dapat membantu membaca tren produk dan omzet Anda.';
-        }
-
-        if (Str::contains($normalizedMessage, ['promosi', 'marketing', 'pemasaran'])) {
-            return 'Untuk promosi hari ini: tawarkan paket hemat untuk produk yang sering dibeli bersama, unggah foto produk terlaris ke WhatsApp atau media sosial, dan berikan promo terbatas agar pelanggan terdorong membeli sekarang.';
-        }
-
-        return 'Saya siap membantu mengolah data bisnis Anda. Anda dapat menanyakan stok yang perlu diisi, produk terlaris, analisis penjualan, atau ide promosi.';
     }
 
     /**
