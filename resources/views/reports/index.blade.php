@@ -11,16 +11,16 @@
 
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <form method="GET" class="row g-3 align-items-end">
-                    <div class="col-md-4">
+                <form method="GET" class="row g-3 align-items-end report-date-filter">
+                    <div class="col-12 col-md-6 col-lg-4">
                         <label class="form-label" for="start">Tanggal Mulai</label>
                         <input id="start" type="date" name="start" value="{{ request('start', $start->format('Y-m-d')) }}" class="form-control">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-6 col-lg-4">
                         <label class="form-label" for="end">Tanggal Akhir</label>
                         <input id="end" type="date" name="end" value="{{ request('end', $end->format('Y-m-d')) }}" class="form-control">
                     </div>
-                    <div class="col-md-4 text-md-end">
+                    <div class="col-12 col-lg-4 report-date-filter__actions">
                         <button type="submit" class="btn btn-primary">Tampilkan</button>
                         <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary">Reset</a>
                     </div>
@@ -155,6 +155,16 @@
                 background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
             }
             .report-export-actions form { margin: 0; }
+            .report-date-filter input[type="date"] {
+                min-width: 0;
+                width: 100%;
+            }
+            .report-date-filter__actions {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                gap: .5rem;
+            }
             .report-history-card .card-header { padding: 1rem 1.5rem; }
             .report-history-card .table th { white-space: nowrap; }
             .report-history-card .table td { vertical-align: middle; }
@@ -163,6 +173,12 @@
                 margin-bottom: 0;
             }
             @media (max-width: 767.98px) {
+                .report-date-filter__actions {
+                    justify-content: stretch;
+                }
+                .report-date-filter__actions .btn {
+                    flex: 1 1 10rem;
+                }
                 .report-export-actions form,
                 .report-export-actions .btn { width: 100%; }
                 .report-history-card .card-header { padding: 1rem; }

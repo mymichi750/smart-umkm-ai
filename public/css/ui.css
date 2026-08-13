@@ -1844,6 +1844,30 @@ canvas {
     max-height: none;
 }
 
+.low-stock-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.low-stock-item__info {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.low-stock-item__status {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex: 0 0 auto;
+}
+
+.low-stock-item__progress {
+    width: 5rem;
+    height: .5rem;
+}
+
 .dataTables_wrapper,
 .dataTables_wrapper .row,
 .dataTables_wrapper .col-sm-12 {
@@ -1909,6 +1933,21 @@ canvas {
 
     .crud-actions {
         gap: .3rem;
+    }
+
+    .low-stock-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .65rem;
+    }
+
+    .low-stock-item__status {
+        width: 100%;
+    }
+
+    .low-stock-item__progress {
+        flex: 1 1 auto;
+        width: auto;
     }
 
     .crud-action-btn {

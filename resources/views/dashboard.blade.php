@@ -107,13 +107,13 @@
 <div class="card-body">
                         <ul class="list-group list-group-flush">
                             @forelse($lowStockProducts as $product)
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-0 border-bottom rounded-0">
-                                    <div>
+                                <li class="list-group-item low-stock-item px-0 py-3 border-0 border-bottom rounded-0">
+                                    <div class="low-stock-item__info">
                                         <strong>{{ $product->name }}</strong>
                                         <div class="text-muted small">SKU: {{ $product->sku ?? '-' }}</div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="progress" style="width:80px;height:8px;">
+                                    <div class="low-stock-item__status">
+                                        <div class="progress low-stock-item__progress">
                                             <div class="progress-bar bg-warning" role="progressbar"
                                                  style="width: {{ min(($product->stock / 10) * 100, 100) }}%"
                                                  aria-valuenow="{{ min(($product->stock / 10) * 100, 100) }}"
