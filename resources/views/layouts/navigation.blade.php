@@ -143,6 +143,7 @@
 .premium-plan__price { color: #0f172a; font-size: 1.35rem; font-weight: 800; }
 .premium-plan__feature { display: flex; gap: .45rem; margin: .55rem 0; color: #475569; font-size: .86rem; }
 .premium-plan__feature i { color: #16a34a; }
+.premium-plan__trial { margin: .85rem 0; padding: .7rem .75rem; border: 1px solid #bfdbfe; border-radius: .75rem; background: #eff6ff; color: #1e40af; font-size: .8rem; line-height: 1.45; }
 
 
 
@@ -600,6 +601,10 @@
                             <h6 class="fw-bold mt-3 mb-1">Premium 1</h6>
                             <div class="premium-plan__price">Gratis</div>
                             <div class="text-muted small">Selamanya</div>
+                            <div class="premium-plan__trial">
+                                <i class="bi bi-gift-fill me-1"></i>
+                                <strong>Bonus pengguna baru:</strong> akses semua fitur, termasuk AI, gratis selama 1 bulan.
+                            </div>
                             <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Gunakan fitur website kasir</span></div>
                             <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Produk, stok, pelanggan, dan laporan</span></div>
                             <div class="premium-plan__feature"><i class="bi bi-x-circle-fill text-danger"></i><span>Fitur AI belum tersedia</span></div>

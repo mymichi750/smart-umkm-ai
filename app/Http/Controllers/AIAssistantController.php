@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CashFlow;
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
@@ -143,6 +145,7 @@ Tugas:
 - Membantu analisis penjualan.
 - Memberikan ide promosi.
 - Membantu menentukan produk terlaris.
+- Membantu mengenali pelanggan yang melakukan pembelian dan pola belanjanya.
 - Memberikan strategi pemasaran digital.
 - Memberikan saran pengelolaan stok.
 - Menjawab dengan bahasa Indonesia yang mudah dipahami.
@@ -165,6 +168,7 @@ Data bisnis aktual dari database aplikasi (gunakan sebagai satu-satunya sumber a
 Aturan analisis:
 - Gunakan data di atas saat pertanyaan berkaitan dengan penjualan, produk, omzet, atau stok.
 - Jangan mengarang angka, nama produk, atau fakta yang tidak tersedia pada data.
+- Data pelanggan hanya boleh digunakan untuk menjawab operasional bisnis. Jangan tampilkan email, nomor telepon, alamat, atau data sensitif pelanggan.
 - Bila data belum cukup, jelaskan data apa yang belum tersedia.
 - Sebutkan periode data saat menyampaikan angka.
 - Berikan maksimal 3 rekomendasi yang praktis dan sesuai data.
@@ -278,6 +282,49 @@ PROMPT;
             ])
             ->values();
 
+        $customerPurchases = Customer::query()
+            ->join('transactions', 'customers.id', '=', 'transactions.customer_id')
+            ->whereBetween('transactions.created_at', [$last30Start, $now])
+            ->select('customers.id', 'customers.name')
+            ->selectRaw('COUNT(DISTINCT transactions.id) as jumlah_transaksi')
+            ->selectRaw('SUM(transactions.total) as total_belanja')
+            ->selectRaw('MAX(transactions.created_at) as pembelian_terakhir')
+            ->groupBy('customers.id', 'customers.name')
+            ->orderByDesc('total_belanja')
+            ->limit(20)
+            ->get();
+
+        $customerProductRows = TransactionDetail::query()
+            ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
+            ->join('customers', 'transactions.customer_id', '=', 'customers.id')
+            ->join('products', 'transaction_details.product_id', '=', 'products.id')
+            ->whereBetween('transactions.created_at', [$last30Start, $now])
+            ->select('customers.id as customer_id', 'products.name as product_name')
+            ->selectRaw('SUM(transaction_details.quantity) as quantity')
+            ->groupBy('customers.id', 'products.id', 'products.name')
+            ->orderByDesc('quantity')
+            ->get()
+            ->groupBy('customer_id')
+            ->map(fn ($products) => $products->take(3)->map(fn ($product) => [
+                'nama' => $product->product_name,
+                'jumlah' => (int) $product->quantity,
+            ])->values()->all());
+
+        $customerPurchases = $customerPurchases->map(fn ($customer) => [
+            'nama' => $customer->name,
+            'jumlah_transaksi' => (int) $customer->jumlah_transaksi,
+            'total_belanja' => (float) $customer->total_belanja,
+            'pembelian_terakhir' => Carbon::parse($customer->pembelian_terakhir)->format('d-m-Y H:i'),
+            'produk_dibeli' => $customerProductRows->get($customer->id, []),
+        ])->values();
+
+        $cashFlowLast30Days = CashFlow::query()
+            ->whereBetween('created_at', [$last30Start, $now])
+            ->select('type')
+            ->selectRaw('SUM(amount) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+
         return json_encode([
             'periode_analisis' => [
                 'hari_ini' => $today->format('d-m-Y'),
@@ -295,6 +342,16 @@ PROMPT;
             'produk_terlaris_30_hari' => $topProducts,
             'stok_menipis' => $lowStockProducts,
             'penjualan_harian_7_hari' => $dailySales,
+            'pelanggan' => [
+                'total_pelanggan_terdaftar' => Customer::count(),
+                'pelanggan_bertransaksi_30_hari' => $customerPurchases->count(),
+                'daftar_pelanggan_pembeli_30_hari' => $customerPurchases,
+            ],
+            'arus_kas_30_hari' => [
+                'penambahan_dana' => (float) ($cashFlowLast30Days[CashFlow::CAPITAL] ?? 0),
+                'pengeluaran_operasional' => (float) ($cashFlowLast30Days[CashFlow::EXPENSE] ?? 0),
+                'pembelian_stok' => (float) ($cashFlowLast30Days[CashFlow::STOCK_PURCHASE] ?? 0),
+            ],
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: '{}';
     }
 }

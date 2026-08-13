@@ -3,7 +3,7 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
             <div>
                 <h2 class="h4 mb-1">AI Asisten</h2>
-                <p class="text-muted mb-0">Asisten AI untuk membantu pelaku UMKM menganalisis pemasaran, stok, dan penjualan.</p>
+                <p class="text-muted mb-0">Asisten AI untuk menganalisis pelanggan, transaksi, produk, stok, dan arus kas usaha.</p>
             </div>
             <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2">
                 <i class="bi bi-robot me-2"></i>
@@ -39,6 +39,7 @@
                                 </form>
                                 <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Berapa jumlah transaksi dan omzet saya hari ini?">Transaksi hari ini</button>
                                 <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk apa yang paling laris dalam 30 hari terakhir?">Produk terlaris</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Siapa saja pelanggan yang membeli dalam 30 hari terakhir dan apa yang mereka beli?">Pelanggan pembeli</button>
                             </div>
                             <div class="d-flex flex-wrap gap-2 justify-content-lg-end mt-2">
                                 <button type="button" class="btn btn-outline-primary btn-sm quick-question" data-message="Produk apa yang stoknya habis atau menipis?">Stok perlu diisi</button>
@@ -89,7 +90,7 @@
                     <form id="chatForm" class="d-flex gap-2 align-items-end">
                         @csrf
                         <div class="flex-grow-1">
-                            <textarea id="messageInput" class="form-control" rows="2" placeholder="Tanyakan tentang penjualan atau stok..." required></textarea>
+                            <textarea id="messageInput" class="form-control" rows="2" placeholder="Tanyakan tentang pelanggan, penjualan, stok, atau kas..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
                             <i class="bi bi-send-fill"></i>

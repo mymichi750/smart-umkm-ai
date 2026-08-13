@@ -92,7 +92,9 @@
                         <span class="badge bg-success">Realtime</span>
                     </div>
                     <div class="card-body">
-                        <canvas id="salesChart" height="320"></canvas>
+                        <div class="sales-chart-wrap">
+                            <canvas id="salesChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>

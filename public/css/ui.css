@@ -1830,3 +1830,121 @@ canvas {
         overflow-wrap: anywhere;
     }
 }
+
+/* ==========================================================
+   RESPONSIVE SAFEGUARDS
+   Aturan lintas halaman untuk fitur baru maupun halaman lama.
+   ========================================================== */
+.sales-chart-wrap {
+    position: relative;
+    height: clamp(15rem, 42vw, 20rem);
+}
+
+.sales-chart-wrap canvas {
+    max-height: none;
+}
+
+.dataTables_wrapper,
+.dataTables_wrapper .row,
+.dataTables_wrapper .col-sm-12 {
+    min-width: 0;
+}
+
+.dataTables_wrapper .table-responsive,
+.dataTables_wrapper .dataTables_scroll {
+    max-width: 100%;
+}
+
+.pagination {
+    flex-wrap: wrap;
+    gap: .25rem;
+}
+
+.pagination .page-link {
+    border-radius: .5rem;
+}
+
+@media (max-width: 767.98px) {
+    .page-heading > .d-flex > .btn,
+    .page-heading > .d-flex > .crud-create-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-heading > .d-flex > .d-flex {
+        width: 100%;
+    }
+
+    .page-heading > .d-flex > .d-flex > .btn {
+        flex: 1 1 8rem;
+    }
+
+    .page-heading .crud-create-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .card-body > form.row .text-end {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        text-align: left !important;
+    }
+
+    .card-body > form.row .text-end > .btn,
+    .card-body > form.row .text-end > a.btn {
+        flex: 1 1 8rem;
+    }
+
+    .table-responsive {
+        border-radius: .75rem;
+        scrollbar-width: thin;
+    }
+
+    .table-responsive::after {
+        content: '';
+        display: block;
+        height: 1px;
+    }
+
+    .crud-actions {
+        gap: .3rem;
+    }
+
+    .crud-action-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+
+    .list-group-item:hover,
+    .product-card:hover {
+        transform: none;
+    }
+}
+
+@media (max-width: 399.98px) {
+    .card-body > form.row .text-end > .btn,
+    .card-body > form.row .text-end > a.btn {
+        flex-basis: 100%;
+    }
+
+    .crud-actions {
+        gap: .2rem;
+    }
+
+    .crud-action-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .page-link {
+        min-width: 2.25rem;
+        padding-right: .55rem;
+        padding-left: .55rem;
+        text-align: center;
+    }
+}
