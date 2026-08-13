@@ -95,6 +95,8 @@
 
         .dashboard-preview{
             width:100%;
+            aspect-ratio:4/3;
+            object-fit:cover;
             border-radius:15px;
         }
 
@@ -233,17 +235,17 @@
             <div class="col-lg-6">
 
                 <div class="welcome-badge mb-4">
-                    🚀 Smart UMKM POS
+                    🏪 POS khusus warung sembako
                 </div>
 
                 <h1 class="hero-title">
-                    Digitalisasi UMKM Menjadi Lebih Mudah dan Profesional
+                    Kelola Warung Sembako Lebih Rapi, Cepat, dan Untung
                 </h1>
 
                 <p class="hero-subtitle mt-4">
-                    Smart UMKM POS membantu pelaku usaha mengelola produk,
-                    transaksi, pelanggan, dan operasional bisnis dalam satu
-                    platform yang modern, cepat, dan mudah digunakan.
+                    Smart UMKM POS membantu pemilik warung sembako mencatat
+                    penjualan, memantau stok barang harian, dan melihat
+                    keuntungan usaha dalam satu aplikasi yang mudah digunakan.
                 </p>
 
                 <div class="d-flex flex-wrap gap-3 mt-4">
@@ -275,18 +277,18 @@
                 <div class="preview-card">
 
                    <img
-    src="{{ asset('images/landing_page.png') }}"
+    src="{{ asset('images/warung.jpg') }}"
     class="dashboard-preview"
-    alt="Smart UMKM POS">
+    alt="Warung sembako yang menggunakan Smart UMKM POS">
 
                     <div class="text-center mt-4">
                         <h4 class="section-title">
-                            Solusi Modern untuk UMKM Indonesia
+                            Partner Digital untuk Warung Anda
                         </h4>
 
                         <p class="section-text mb-0">
-                            Kelola usaha dengan lebih cepat, efisien,
-                            dan siap menghadapi era digital.
+                            Fokus melayani pelanggan, biarkan pencatatan
+                            transaksi dan stok kami bantu rapikan.
                         </p>
                     </div>
 
@@ -305,7 +307,7 @@
                     </div>
                     <h5 class="mt-3">Kasir Digital</h5>
                     <p class="text-muted mb-0">
-                        Proses transaksi lebih cepat dan mudah.
+                        Layani belanja harian dengan cepat dan minim salah hitung.
                     </p>
                 </div>
             </div>
@@ -315,9 +317,9 @@
                     <div class="feature-icon">
                         <i class="bi bi-box-seam"></i>
                     </div>
-                    <h5 class="mt-3">Manajemen Produk</h5>
+                    <h5 class="mt-3">Stok Sembako</h5>
                     <p class="text-muted mb-0">
-                        Kelola produk dan stok dengan rapi.
+                        Pantau beras, minyak, gula, dan barang dagangan lainnya.
                     </p>
                 </div>
             </div>
@@ -327,9 +329,9 @@
                     <div class="feature-icon">
                         <i class="bi bi-people"></i>
                     </div>
-                    <h5 class="mt-3">Pelanggan</h5>
+                    <h5 class="mt-3">Pelanggan Langganan</h5>
                     <p class="text-muted mb-0">
-                        Simpan data pelanggan dalam satu tempat.
+                        Simpan data pelanggan agar pelayanan lebih personal.
                     </p>
                 </div>
             </div>
@@ -339,9 +341,9 @@
                     <div class="feature-icon">
                         <i class="bi bi-graph-up-arrow"></i>
                     </div>
-                    <h5 class="mt-3">Laporan Bisnis</h5>
+                    <h5 class="mt-3">Laporan Penjualan</h5>
                     <p class="text-muted mb-0">
-                        Pantau perkembangan usaha dengan mudah.
+                        Ketahui omzet dan perkembangan warung setiap hari.
                     </p>
                 </div>
             </div>

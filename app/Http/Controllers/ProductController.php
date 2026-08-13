@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\CashFlow;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -33,7 +35,13 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        Product::create($request->validated());
+        $product = DB::transaction(function () use ($request) {
+            $product = Product::create($request->validated());
+
+            $this->recordStockPurchase($product, $product->stock, (float) $product->purchase_price, 'Stok awal');
+
+            return $product;
+        });
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
@@ -52,7 +60,15 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product->update($request->validated());
+        DB::transaction(function () use ($request, $product) {
+            $previousStock = $product->stock;
+            $data = $request->validated();
+
+            $product->update($data);
+
+            $addedStock = $product->stock - $previousStock;
+            $this->recordStockPurchase($product, $addedStock, (float) $data['purchase_price'], 'Penambahan stok');
+        });
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
     }
@@ -62,5 +78,20 @@ class ProductController extends Controller
         $product->delete();
 
         return back()->with('success', 'Produk berhasil dihapus.');
+    }
+
+    private function recordStockPurchase(Product $product, int $quantity, float $purchasePrice, string $prefix): void
+    {
+        if ($quantity <= 0 || $purchasePrice <= 0) {
+            return;
+        }
+
+        CashFlow::create([
+            'user_id' => auth()->id(),
+            'product_id' => $product->id,
+            'type' => CashFlow::STOCK_PURCHASE,
+            'amount' => $quantity * $purchasePrice,
+            'description' => "{$prefix}: {$product->name} ({$quantity} item)",
+        ]);
     }
 }

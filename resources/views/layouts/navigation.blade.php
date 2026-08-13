@@ -121,6 +121,29 @@
 
 }
 
+.premium-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: 0;
+    padding: .3rem .55rem;
+    border: 1px solid rgba(250, 204, 21, .55);
+    border-radius: 999px;
+    background: rgba(250, 204, 21, .14);
+    color: #fef08a;
+    font-size: .72rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.premium-trigger:hover { background: rgba(250, 204, 21, .26); color: #fff; }
+.user-role + .premium-trigger { margin-left: .45rem; }
+.premium-plan { height: 100%; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; }
+.premium-plan--featured { border: 2px solid #2563eb; background: #eff6ff; }
+.premium-plan__price { color: #0f172a; font-size: 1.35rem; font-weight: 800; }
+.premium-plan__feature { display: flex; gap: .45rem; margin: .55rem 0; color: #475569; font-size: .86rem; }
+.premium-plan__feature i { color: #16a34a; }
+
 
 
 .sidebar-nav .nav-link {
@@ -364,6 +387,10 @@
                         {{ ucfirst(auth()->user()->role) }}
                     </span>
 
+                    <button type="button" class="premium-trigger" data-bs-toggle="modal" data-bs-target="#premiumModal">
+                        <i class="bi bi-stars"></i> Premium {{ auth()->user()->premium_level ?? 1 }}
+                    </button>
+
                 </div>
 
             </div>
@@ -554,3 +581,104 @@
     </div>
 
 </div>
+
+<div class="modal fade" id="premiumModal" tabindex="-1" aria-labelledby="premiumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <h5 class="modal-title fw-bold" id="premiumModalLabel"><i class="bi bi-stars text-warning me-2"></i>Pilih Paket Premium</h5>
+                    <p class="text-muted small mb-0">Sesuaikan fitur Smart UMKM AI dengan kebutuhan warung Anda.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <section class="premium-plan">
+                            <span class="badge text-bg-secondary">Paket saat ini</span>
+                            <h6 class="fw-bold mt-3 mb-1">Premium 1</h6>
+                            <div class="premium-plan__price">Gratis</div>
+                            <div class="text-muted small">Selamanya</div>
+                            <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Gunakan fitur website kasir</span></div>
+                            <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Produk, stok, pelanggan, dan laporan</span></div>
+                            <div class="premium-plan__feature"><i class="bi bi-x-circle-fill text-danger"></i><span>Fitur AI belum tersedia</span></div>
+                        </section>
+                    </div>
+                    <div class="col-md-4">
+                        <section class="premium-plan premium-plan--featured">
+                            <span class="badge text-bg-primary">Populer</span>
+                            <h6 class="fw-bold mt-3 mb-1">Premium 2</h6>
+                            <div class="premium-plan__price">Rp49.000</div>
+                            <div class="text-muted small">per bulan</div>
+                            <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Semua fitur website kasir</span></div>
+                            <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>AI analisis usaha dan penjualan</span></div>
+                            <div class="premium-plan__feature"><i class="bi bi-x-circle-fill text-danger"></i><span>Fitur AI lanjutan belum tersedia</span></div>
+                            @if((auth()->user()->premium_level ?? 1) >= 2)
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" disabled>Paket Aktif</button>
+                            @else
+                                <button type="button" class="btn btn-primary btn-sm w-100 mt-2" data-premium-level="2" data-premium-name="Premium 2" data-premium-price="Rp49.000/bulan" data-bs-toggle="modal" data-bs-target="#premiumPaymentModal">Beli Sekarang</button>
+                            @endif
+                        </section>
+                    </div>
+                    <div class="col-md-4">
+                        <section class="premium-plan">
+                            <h6 class="fw-bold mt-3 mb-1">Premium 3</h6>
+                            <div class="premium-plan__price">Rp99.000</div>
+                            <div class="text-muted small">per bulan</div>
+                            <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Semua fitur website kasir</span></div>
+                            <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>AI analisis usaha dan penjualan</span></div>
+                            <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Akses semua fitur AI</span></div>
+                            @if((auth()->user()->premium_level ?? 1) >= 3)
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" disabled>Paket Aktif</button>
+                            @else
+                                <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" data-premium-level="3" data-premium-name="Premium 3" data-premium-price="Rp99.000/bulan" data-bs-toggle="modal" data-bs-target="#premiumPaymentModal">Beli Sekarang</button>
+                            @endif
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="premiumPaymentModal" tabindex="-1" aria-labelledby="premiumPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0">
+                <div>
+                    <h5 class="modal-title fw-bold" id="premiumPaymentModalLabel">Bayar dengan QRIS</h5>
+                    <p class="small text-muted mb-0">Scan kode QR untuk mengaktifkan paket premium.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body text-center pt-0">
+                <div class="rounded-3 bg-light p-3 mb-3">
+                    <div class="fw-bold" id="premiumPaymentName">Premium</div>
+                    <div class="text-primary fw-bold fs-5" id="premiumPaymentPrice"></div>
+                </div>
+                <img src="{{ asset('images/qris.jpeg') }}" alt="QRIS pembayaran paket premium" class="img-fluid border rounded-3 p-2" style="width: min(100%, 250px);">
+                <p class="small text-muted mt-3 mb-0">Setelah pembayaran berhasil, tekan tombol konfirmasi di bawah.</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <form action="{{ route('premium.confirm-payment') }}" method="POST" class="w-100">
+                    @csrf
+                    <input type="hidden" name="premium_level" id="premiumPaymentLevel">
+                    <button type="submit" class="btn btn-success w-100"><i class="bi bi-check-circle me-1"></i>Saya Sudah Bayar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.querySelectorAll('[data-premium-level]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            document.getElementById('premiumPaymentLevel').value = this.dataset.premiumLevel;
+            document.getElementById('premiumPaymentName').textContent = this.dataset.premiumName;
+            document.getElementById('premiumPaymentPrice').textContent = this.dataset.premiumPrice;
+        });
+    });
+</script>
+@endpush

@@ -9,7 +9,9 @@ use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class PosController extends Controller
@@ -100,15 +102,29 @@ class PosController extends Controller
 
         $items = collect($cart);
         $total = $items->sum('subtotal');
-        $paid = (float) $request->paid;
+        $paymentMethod = $request->payment_method;
+        $paid = $paymentMethod === 'qris' ? $total : (float) $request->paid;
         $change = $paid - $total;
+
+        $qrisImage = null;
+        if ($paymentMethod === 'qris') {
+            $qrisImage = 'images/qris.jpeg';
+
+            if ($request->hasFile('qris_image')) {
+                $directory = public_path('images/qris');
+                File::ensureDirectoryExists($directory);
+                $filename = 'qris_'.now()->format('YmdHis').'_'.Str::random(8).'.'.$request->file('qris_image')->extension();
+                $request->file('qris_image')->move($directory, $filename);
+                $qrisImage = 'images/qris/'.$filename;
+            }
+        }
 
         if ($paid < $total) {
             return back()->with('error', 'Jumlah uang pelanggan kurang.');
         }
 
         try {
-            DB::transaction(function () use ($request, $items, $total, $paid, $change, &$transaction) {
+            DB::transaction(function () use ($request, $items, $total, $paid, $change, $paymentMethod, $qrisImage, &$transaction) {
                 $products = [];
 
                 foreach ($items as $item) {
@@ -129,6 +145,8 @@ class PosController extends Controller
                 $transaction = Transaction::create([
                     'user_id' => auth()->id(),
                     'customer_id' => $request->customer_id,
+                    'payment_method' => $paymentMethod,
+                    'qris_image' => $qrisImage,
                     'invoice' => 'INV'.now()->format('YmdHis').rand(100, 999),
                     'total' => $total,
                     'paid' => $paid,
@@ -146,7 +164,9 @@ class PosController extends Controller
                         'subtotal' => $item['subtotal'],
                     ]);
 
-                    $products[$item['id']]->decrement('stock', $item['quantity']);
+                    $product = $products[$item['id']];
+                    $product->stock -= $item['quantity'];
+                    $product->save();
                 }
             });
         } catch (ValidationException $exception) {

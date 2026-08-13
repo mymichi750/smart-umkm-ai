@@ -410,34 +410,36 @@ Rp {{ number_format($total,0,',','.') }}
 
 <form action="{{ route('pos.checkout') }}"
 method="POST"
+enctype="multipart/form-data"
 class="mt-4">
 
 @csrf
 
 
 
-<label class="form-label fw-semibold">
+<label for="customer_id" class="form-label fw-semibold">
 
-Pelanggan
+Pilih Pelanggan
 
 </label>
 
 
-<select name="customer_id"
-class="form-select mb-3">
+<select id="customer_id"
+name="customer_id"
+class="form-select mb-1">
 
 
 <option value="">
-Umum
+Pelanggan Umum
 </option>
 
 
 @foreach($customers as $customer)
 
 
-<option value="{{ $customer->id }}">
+<option value="{{ $customer->id }}" @selected(old('customer_id') == $customer->id)>
 
-{{ $customer->name }}
+{{ $customer->name }}{{ $customer->phone ? ' — '.$customer->phone : '' }}
 
 </option>
 
@@ -447,11 +449,50 @@ Umum
 
 </select>
 
+<div class="form-text mb-3">
+{{ $customers->isEmpty() ? 'Belum ada pelanggan terdaftar. Transaksi akan dicatat sebagai pelanggan umum.' : 'Daftar diambil dari data pelanggan yang sudah terdaftar.' }}
+</div>
 
 
 
 
-<label class="form-label fw-semibold">
+
+<label for="paymentMethod" class="form-label fw-semibold">
+
+Metode Pembayaran
+
+</label>
+
+
+<select id="paymentMethod"
+name="payment_method"
+class="form-select mb-3">
+
+<option value="cash" @selected(old('payment_method', 'cash') === 'cash')>Tunai</option>
+<option value="qris" @selected(old('payment_method') === 'qris')>QRIS</option>
+
+</select>
+
+
+<div id="qrisPaymentPanel" class="qris-payment-panel mb-3" hidden>
+
+    <div class="d-flex flex-column flex-sm-row align-items-center gap-3">
+        <img id="qrisPreview" src="{{ asset('images/qris.jpeg') }}" class="qris-preview" alt="Kode QRIS pembayaran">
+        <div class="text-center text-sm-start">
+            <strong class="d-block">Scan QRIS untuk membayar</strong>
+            <small class="text-muted d-block mb-2">Nominal QRIS otomatis sesuai total transaksi.</small>
+            <label for="qrisImage" class="btn btn-outline-primary btn-sm mb-0">
+                <i class="bi bi-image me-1"></i>Ganti gambar QRIS
+            </label>
+            <input id="qrisImage" name="qris_image" type="file" accept="image/*" class="d-none">
+            <small id="qrisFileName" class="d-block text-muted mt-1">Menggunakan QRIS default.</small>
+        </div>
+    </div>
+
+</div>
+
+
+<label for="paidAmount" class="form-label fw-semibold">
 
 Jumlah Uang
 
@@ -460,6 +501,7 @@ Jumlah Uang
 
 <input 
 type="number"
+id="paidAmount"
 name="paid"
 class="form-control mb-3"
 value="{{ old('paid',$total) }}">
@@ -468,7 +510,7 @@ value="{{ old('paid',$total) }}">
 
 
 
-<label class="form-label fw-semibold">
+<label for="notes" class="form-label fw-semibold">
 
 Catatan
 
@@ -476,13 +518,14 @@ Catatan
 
 
 <textarea 
+id="notes"
 name="notes"
 class="form-control mb-3"></textarea>
 
 
 
 
-<label class="form-label fw-semibold">
+<label for="changeAmount" class="form-label fw-semibold">
 
 Kembalian
 
@@ -608,6 +651,22 @@ margin:5px 0 0;
     margin-top: auto;
 }
 
+.qris-payment-panel {
+    padding: 1rem;
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+    background: #eff6ff;
+}
+
+.qris-preview {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #fff;
+    padding: .4rem;
+}
+
 @media (max-width: 575.98px) {
     .product-card {
         padding: 12px;
@@ -681,6 +740,24 @@ const totalAmount={{$total}};
 const paid=document.querySelector('input[name="paid"]');
 
 const change=document.getElementById('changeAmount');
+const paymentMethod=document.getElementById('paymentMethod');
+const qrisPanel=document.getElementById('qrisPaymentPanel');
+const qrisImage=document.getElementById('qrisImage');
+const qrisPreview=document.getElementById('qrisPreview');
+const qrisFileName=document.getElementById('qrisFileName');
+
+function updatePaymentMethod() {
+    const isQris=paymentMethod.value === 'qris';
+    qrisPanel.hidden=!isQris;
+    paid.readOnly=isQris;
+
+    if (isQris) {
+        paid.value=totalAmount;
+    }
+
+    const result=paid.value-totalAmount;
+    change.value='Rp '+Math.max(result,0).toLocaleString('id-ID');
+}
 
 
 
@@ -696,6 +773,17 @@ change.value=
 
 
 });
+
+paymentMethod.addEventListener('change', updatePaymentMethod);
+
+qrisImage.addEventListener('change', function () {
+    const file=this.files[0];
+    if (!file) return;
+    qrisPreview.src=URL.createObjectURL(file);
+    qrisFileName.textContent=file.name;
+});
+
+updatePaymentMethod();
 
 
 

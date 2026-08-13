@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PremiumController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -18,6 +19,7 @@ Route::get('/', function () {
 
 
 Route::middleware(['auth'])->group(function () {
+    Route::post('/premium/confirm-payment', [PremiumController::class, 'confirmPayment'])->name('premium.confirm-payment');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/admin/ai-assistant', [AIAssistantController::class, 'index'])->name('ai-assistant.index');
@@ -38,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'destroy']);
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::post('reports/cash-flow', [ReportController::class, 'storeCashFlow'])->name('reports.cash-flow.store');
         Route::post('reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
         Route::post('reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');
     });

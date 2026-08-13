@@ -31,6 +31,15 @@ class Product extends Model
         'active' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (Product $product): void {
+            if ($product->stock <= 0) {
+                $product->active = false;
+            }
+        });
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
