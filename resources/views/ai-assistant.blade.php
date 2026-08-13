@@ -2,8 +2,8 @@
     <x-slot name="header">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
             <div>
-                <h2 class="h4 mb-1">AI Business Assistant</h2>
-                <p class="text-muted mb-0">Asisten AI untuk membantu pelaku UMKM menganalisis bisnis, pemasaran, stok, dan penjualan.</p>
+                <h2 class="h4 mb-1">AI Asisten</h2>
+                <p class="text-muted mb-0">Asisten AI untuk membantu pelaku UMKM menganalisis pemasaran, stok, dan penjualan.</p>
             </div>
             <span class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2">
                 <i class="bi bi-robot me-2"></i>
@@ -23,8 +23,8 @@
                                     <i class="bi bi-robot fs-4 text-primary"></i>
                                 </div>
                                 <div>
-                                    <h5 class="mb-1">Smart UMKM AI, mitra keputusan bisnis Anda</h5>
-                                    <p class="mb-0 text-muted">Ubah data penjualan dan stok menjadi langkah bisnis yang lebih tepat.</p>
+                                    <h5 class="mb-1">Smart UMKM AI, mitra keputusan Anda</h5>
+                                    <p class="mb-0 text-muted">Ubah data penjualan dan stok menjadi langkah yang lebih tepat.</p>
                                 </div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                         <div class="d-flex justify-content-start mb-3">
                             <div class="chat-bubble chat-bubble--ai">
                                 <div class="fw-semibold mb-1">Smart UMKM AI</div>
-                                <div>Halo! Saya siap mengubah data penjualan dan stok Anda menjadi insight serta rekomendasi bisnis yang praktis.</div>
+                                <div>Halo! Saya siap mengubah data penjualan dan stok Anda menjadi insight serta rekomendasi yang praktis.</div>
                                 <div class="chat-time">{{ now()->format('H:i') }}</div>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
                     <form id="chatForm" class="d-flex gap-2 align-items-end">
                         @csrf
                         <div class="flex-grow-1">
-                            <textarea id="messageInput" class="form-control" rows="2" placeholder="Tanyakan tentang bisnis Anda..." required></textarea>
+                            <textarea id="messageInput" class="form-control" rows="2" placeholder="Tanyakan tentang penjualan atau stok..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
                             <i class="bi bi-send-fill"></i>
@@ -206,6 +206,15 @@
                     chatShell.scrollTop = chatShell.scrollHeight;
                 }
 
+                function getWibTime() {
+                    return new Intl.DateTimeFormat('id-ID', {
+                        timeZone: 'Asia/Jakarta',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hourCycle: 'h23'
+                    }).format(new Date());
+                }
+
                 function appendMessage(role, content, time) {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'd-flex ' + (role === 'user' ? 'justify-content-end' : 'justify-content-start') + ' mb-3';
@@ -240,8 +249,7 @@ body.innerHTML = content;
                         return;
                     }
 
-                    const now = new Date();
-                    const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                    const time = getWibTime();
                     appendMessage('user', message, time);
                     messageInput.value = '';
                     typingIndicator.classList.remove('d-none');
@@ -263,7 +271,7 @@ body.innerHTML = content;
                     })
                     .catch(() => {
                         typingIndicator.classList.add('d-none');
-                        appendMessage('assistant', 'Maaf, terjadi kesalahan saat menghubungkan AI.', new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
+                        appendMessage('assistant', 'Maaf, terjadi kesalahan saat menghubungkan AI.', getWibTime());
                     });
                 });
 

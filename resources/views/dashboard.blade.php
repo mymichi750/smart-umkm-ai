@@ -14,7 +14,7 @@
         <div class="dashboard-header">
             <h1>🚀 Smart UMKM AI Dashboard</h1>
             <p>
-                Pantau penjualan, stok produk, dan performa bisnis Anda secara real-time dengan bantuan AI.
+                Pantau penjualan, stok produk, dan performa usaha Anda secara real-time dengan bantuan AI.
             </p>
         </div>
 
@@ -133,7 +133,7 @@
         </div>
 
         <!-- ==========================================================
-             AI BUSINESS ANALYTICS
+             AI ANALISIS
              ========================================================== -->
         <div class="row g-4 mt-1">
             <div class="col-12">
@@ -141,7 +141,7 @@
                     <div class="card-header ai-analytics-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                         <div>
                             <h5 class="ai-analytics-title mb-1">
-                                <i class="bi bi-robot me-2"></i>AI Business Analytics
+                                <i class="bi bi-robot me-2"></i>AI Analisis
                             </h5>
                             <p class="ai-analytics-description mb-0">Analisis produk terlaris, tren penjualan, prediksi stok, dan keuntungan usaha secara real-time.</p>
                         </div>
@@ -213,12 +213,12 @@
                                 </div>
                             </div>
 
-                            <!-- INSIGHT TREN & PREDIKSI STOK -->
+                            <!-- RINGKASAN PENJUALAN DAN STOK -->
                             <div class="col-12 col-lg-4">
                                 <div class="card h-100 bg-gradient-light border-0">
                                     <div class="card-body">
                                         <h6 class="fw-bold mb-3">
-                                            <i class="bi bi-lightbulb text-primary me-2"></i>Insight & Prediksi Stok
+                                            <i class="bi bi-lightbulb text-primary me-2"></i>Ringkasan Penjualan dan Stok
                                         </h6>
                                         <div class="alert alert-light border small mb-3">
                                             <i class="bi bi-calendar-event me-1"></i>
@@ -228,21 +228,25 @@
                                             <i class="bi bi-trending-{{ $trendDirection == 'naik' ? 'up' : 'down' }} text-{{ $trendDirection == 'naik' ? 'success' : 'danger' }} me-1"></i>
                                             Tren penjualan 7 hari <strong>{{ $trendDirection }}</strong> ({{ $growth >= 0 ? '+' : '' }}{{ $growth }}%)
                                         </div>
-                                        <div class="fw-semibold small text-muted mb-2">Estimasi Hari Stok Habis</div>
+                                        <div class="fw-semibold small text-muted mb-2">Perkiraan Kapan Stok Habis</div>
                                         <ul class="list-group list-group-flush">
                                             @forelse($stockPredictions as $sp)
-                                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-0 border-bottom">
-                                                    <div>
-                                                        <span class="small">{{ $sp['product']->name }}</span>
-                                                        <div class="text-muted" style="font-size:0.75rem;">stok {{ $sp['product']->stock }} · rata-rata {{ $sp['avg_daily'] }}/hari</div>
+                                                <li class="list-group-item stock-prediction-item px-0 py-3 border-0 border-bottom">
+                                                    <div class="stock-prediction-item__details">
+                                                        <div class="stock-prediction-item__name">{{ $sp['product']->name }}</div>
+                                                        <div class="stock-prediction-item__quantity">Sisa stok: {{ $sp['product']->stock }}</div>
                                                     </div>
-                                                    @if($sp['days_left'] !== null)
-                                                        <span class="badge {{ $sp['days_left'] <= 7 ? 'bg-danger' : ($sp['days_left'] <= 14 ? 'bg-warning text-dark' : 'bg-success') }}">
-                                                            ±{{ $sp['days_left'] }} hari
-                                                        </span>
-                                                    @else
-                                                        <span class="badge bg-secondary">Tidak terjual</span>
-                                                    @endif
+                                                    @php
+                                                        $stockStatus = match (true) {
+                                                            $sp['days_left'] === null => ['Belum ada penjualan', 'bg-secondary'],
+                                                            $sp['days_left'] <= 7 => ['Habis dalam 1 minggu', 'bg-danger'],
+                                                            $sp['days_left'] <= 14 => ['Habis dalam 2 minggu', 'bg-warning text-dark'],
+                                                            $sp['days_left'] <= 30 => ['Habis bulan ini', 'bg-warning text-dark'],
+                                                            $sp['days_left'] <= 90 => ['Habis sekitar ' . (int) ceil($sp['days_left'] / 30) . ' bulan lagi', 'bg-success'],
+                                                            default => ['Stok masih aman', 'bg-success'],
+                                                        };
+                                                    @endphp
+                                                    <span class="badge stock-prediction-item__status {{ $stockStatus[1] }}">{{ $stockStatus[0] }}</span>
                                                 </li>
                                             @empty
                                                 <li class="list-group-item text-center text-muted py-3">Tidak ada data stok.</li>

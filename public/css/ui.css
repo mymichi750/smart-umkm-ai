@@ -1488,6 +1488,39 @@ canvas {
     font-size: .82rem;
 }
 
+/* Daftar prediksi stok: jaga informasi dan status tetap rapi pada semua lebar layar. */
+.stock-prediction-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+}
+
+.stock-prediction-item__details {
+    min-width: 0;
+}
+
+.stock-prediction-item__name {
+    font-size: .9rem;
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.stock-prediction-item__quantity {
+    margin-top: .2rem;
+    color: #64748b;
+    font-size: .8rem;
+}
+
+.stock-prediction-item__status {
+    max-width: 9.5rem;
+    padding: .45rem .6rem;
+    line-height: 1.25;
+    text-align: center;
+    white-space: normal;
+}
+
 @media (max-width: 575.98px) {
     .ai-analytics-card .ai-analytics-header {
         padding: 1rem;
@@ -1503,6 +1536,17 @@ canvas {
 
     .ai-analytics-card .bg-gradient-light h6 {
         font-size: 1.05rem;
+    }
+
+    .stock-prediction-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .stock-prediction-item__status {
+        max-width: none;
+        width: 100%;
     }
 }
 

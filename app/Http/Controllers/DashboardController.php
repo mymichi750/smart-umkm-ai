@@ -99,8 +99,12 @@ class DashboardController extends Controller
      */
     protected function buildTrendInsight($bestDay, float $growth, float $last7): array
     {
-        $bestLabel = $bestDay && $bestDay->total ? Carbon::parse($bestDay->date)->format('l') : '-';
-        $bestDate = $bestDay && $bestDay->total ? Carbon::parse($bestDay->date)->format('d M') : '-';
+        $bestLabel = $bestDay && $bestDay->total
+            ? Carbon::parse($bestDay->date)->locale('id')->translatedFormat('l')
+            : '-';
+        $bestDate = $bestDay && $bestDay->total
+            ? Carbon::parse($bestDay->date)->locale('id')->translatedFormat('d M')
+            : '-';
         $bestTotal = $bestDay && $bestDay->total ? (float) $bestDay->total : 0;
 
         return [

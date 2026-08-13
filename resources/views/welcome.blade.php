@@ -107,6 +107,75 @@
             color:#6b7280;
         }
 
+        .help-chatbot-toggle{
+            position:fixed;
+            right:24px;
+            bottom:24px;
+            z-index:1050;
+            width:58px;
+            height:58px;
+            border:0;
+            border-radius:50%;
+            background:linear-gradient(135deg,#4f46e5,#2563eb);
+            color:#fff;
+            font-size:1.45rem;
+            box-shadow:0 12px 28px rgba(79,70,229,.35);
+            transition:transform .2s ease, box-shadow .2s ease;
+        }
+
+        .help-chatbot-toggle:hover{
+            transform:translateY(-3px);
+            box-shadow:0 16px 32px rgba(79,70,229,.42);
+        }
+
+        .help-chatbot{
+            position:fixed;
+            right:24px;
+            bottom:94px;
+            z-index:1050;
+            display:flex;
+            flex-direction:column;
+            width:min(370px,calc(100vw - 32px));
+            overflow:hidden;
+            border:1px solid #e0e7ff;
+            border-radius:20px;
+            background:#fff;
+            box-shadow:0 18px 48px rgba(15,23,42,.2);
+            opacity:0;
+            pointer-events:none;
+            transform:translateY(12px) scale(.98);
+            transform-origin:bottom right;
+            transition:opacity .2s ease, transform .2s ease;
+        }
+
+        .help-chatbot.is-open{
+            opacity:1;
+            pointer-events:auto;
+            transform:translateY(0) scale(1);
+        }
+
+        .help-chatbot__header{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:1rem;
+            padding:1rem 1.15rem;
+            background:linear-gradient(135deg,#4f46e5,#2563eb);
+            color:#fff;
+        }
+
+        .help-chatbot__header p{ margin:0; color:rgba(255,255,255,.82); font-size:.8rem; }
+        .help-chatbot__close{ border:0; background:transparent; color:#fff; font-size:1.2rem; }
+        .help-chatbot__messages{ display:flex; flex-direction:column; gap:.7rem; min-height:210px; max-height:290px; overflow-y:auto; padding:1rem; background:#f8fafc; }
+        .help-chatbot__message{ max-width:90%; padding:.7rem .8rem; border-radius:14px; font-size:.87rem; line-height:1.5; }
+        .help-chatbot__message--bot{ align-self:flex-start; border-bottom-left-radius:4px; background:#e0e7ff; color:#1e1b4b; }
+        .help-chatbot__message a{ color:#3730a3; font-weight:700; }
+        .help-chatbot__quick-actions{ display:flex; flex-wrap:wrap; gap:.45rem; padding:.8rem 1rem; border-top:1px solid #e5e7eb; }
+        .help-chatbot__quick-action{ border:1px solid #c7d2fe; border-radius:999px; background:#fff; color:#4338ca; padding:.38rem .65rem; font-size:.76rem; font-weight:600; }
+        .help-chatbot__form{ display:flex; gap:.5rem; padding:.75rem 1rem 1rem; }
+        .help-chatbot__input{ min-width:0; flex:1; border:1px solid #cbd5e1; border-radius:10px; padding:.55rem .7rem; font-size:.85rem; }
+        .help-chatbot__send{ border:0; border-radius:10px; background:#4f46e5; color:#fff; padding:0 .8rem; }
+
         @media(max-width:768px){
             .welcome-shell{
                 align-items:flex-start;
@@ -133,6 +202,9 @@
             .feature-card{
                 padding:1.25rem;
             }
+
+            .help-chatbot-toggle{ right:16px; bottom:16px; }
+            .help-chatbot{ right:16px; bottom:86px; }
         }
 
         @media(max-width:420px){
@@ -278,6 +350,78 @@
 
     </div>
 </div>
+
+<button type="button" class="help-chatbot-toggle" id="helpChatToggle" aria-label="Buka Asisten AI" aria-expanded="false" aria-controls="helpChatbot">
+    <i class="bi bi-chat-dots-fill"></i>
+</button>
+
+<section class="help-chatbot" id="helpChatbot" aria-label="Asisten AI panduan masuk dan daftar" aria-hidden="true">
+    <div class="help-chatbot__header">
+        <div>
+            <strong><i class="bi bi-robot me-1"></i>Asisten AI</strong>
+            <p>Panduan masuk dan daftar akun</p>
+        </div>
+        <button type="button" class="help-chatbot__close" id="helpChatClose" aria-label="Tutup bantuan"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="help-chatbot__messages" id="helpChatMessages" aria-live="polite">
+        <div class="help-chatbot__message help-chatbot__message--bot">Halo! Saya dapat membantu Anda mengetahui cara masuk atau membuat akun. Silakan pilih pertanyaan di bawah.</div>
+    </div>
+    <div class="help-chatbot__quick-actions">
+        <button type="button" class="help-chatbot__quick-action" data-help-topic="login">Cara masuk</button>
+        <button type="button" class="help-chatbot__quick-action" data-help-topic="register">Cara daftar</button>
+        <button type="button" class="help-chatbot__quick-action" data-help-topic="password">Lupa kata sandi</button>
+    </div>
+    <form class="help-chatbot__form" id="helpChatForm">
+        <input class="help-chatbot__input" id="helpChatInput" type="text" placeholder="Tulis pertanyaan Anda..." aria-label="Pertanyaan bantuan">
+        <button type="submit" class="help-chatbot__send" aria-label="Kirim pertanyaan"><i class="bi bi-send-fill"></i></button>
+    </form>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const chatbot = document.getElementById('helpChatbot');
+        const toggle = document.getElementById('helpChatToggle');
+        const close = document.getElementById('helpChatClose');
+        const form = document.getElementById('helpChatForm');
+        const input = document.getElementById('helpChatInput');
+        const messages = document.getElementById('helpChatMessages');
+        const loginUrl = @json(Route::has('login') ? route('login') : '#');
+        const registerUrl = @json(Route::has('register') ? route('register') : '#');
+        const passwordUrl = @json(Route::has('password.request') ? route('password.request') : '#');
+
+        function setOpen(isOpen) {
+            chatbot.classList.toggle('is-open', isOpen);
+            chatbot.setAttribute('aria-hidden', String(!isOpen));
+            toggle.setAttribute('aria-expanded', String(isOpen));
+            if (isOpen) input.focus();
+        }
+
+        function addReply(topic) {
+            const replies = {
+                login: 'Untuk masuk: tekan tombol <a href="' + loginUrl + '">Masuk</a>, lalu isi email dan kata sandi yang dipakai saat mendaftar. Setelah itu tekan tombol masuk.',
+                register: 'Untuk membuat akun: tekan <a href="' + registerUrl + '">Daftar Sekarang</a>, isi nama, email, kata sandi, serta konfirmasi kata sandi. Setelah lengkap, tekan tombol Daftar Sekarang.',
+                password: 'Jika lupa kata sandi, buka halaman <a href="' + passwordUrl + '">Lupa kata sandi</a>, masukkan email Anda, lalu ikuti tautan pemulihan yang dikirim ke email tersebut.',
+                default: 'Saya dapat membantu panduan <strong>cara masuk</strong>, <strong>cara daftar</strong>, atau <strong>lupa kata sandi</strong>. Silakan pilih salah satu tombol di atas.'
+            };
+            const message = document.createElement('div');
+            message.className = 'help-chatbot__message help-chatbot__message--bot';
+            message.innerHTML = replies[topic] || replies.default;
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        toggle.addEventListener('click', () => setOpen(!chatbot.classList.contains('is-open')));
+        close.addEventListener('click', () => setOpen(false));
+        document.querySelectorAll('[data-help-topic]').forEach(button => button.addEventListener('click', () => addReply(button.dataset.helpTopic)));
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const question = input.value.trim().toLowerCase();
+            if (!question) return;
+            input.value = '';
+            addReply(question.includes('daftar') || question.includes('register') || question.includes('buat akun') ? 'register' : question.includes('lupa') || question.includes('sandi') || question.includes('password') ? 'password' : question.includes('masuk') || question.includes('login') ? 'login' : 'default');
+        });
+    });
+</script>
 
 </body>
 </html>
