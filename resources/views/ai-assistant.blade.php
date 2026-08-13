@@ -23,8 +23,8 @@
                                     <i class="bi bi-robot fs-4 text-primary"></i>
                                 </div>
                                 <div>
-                                    <h5 class="mb-1">Smart UMKM AI, mitra keputusan Anda</h5>
-                                    <p class="mb-0 text-muted">Ubah data penjualan dan stok menjadi langkah yang lebih tepat.</p>
+                                    <h5 class="mb-1">Smart UMKM AI, teman untuk mengelola usaha</h5>
+                                    <p class="mb-0 text-muted">Pantau penjualan dan stok, lalu dapatkan saran yang mudah diterapkan.</p>
                                 </div>
                             </div>
                         </div>
