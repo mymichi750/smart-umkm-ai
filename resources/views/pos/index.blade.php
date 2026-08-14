@@ -39,16 +39,16 @@ Point Of Sale
 
 
 
-<div class="row g-4">
+<div class="row g-4 pos-layout">
 
 
 
 <!-- PRODUK -->
 
-<div class="col-xl-5">
+<div class="col-xl-5 pos-products-column">
 
 
-<div class="card pos-card h-100">
+<div class="card pos-card pos-product-panel">
 
 
 <div class="card-header bg-white border-0 pt-4 px-4">
@@ -106,10 +106,10 @@ placeholder="Cari produk...">
 
 
 
-<div class="card-body px-4">
+<div class="card-body px-4 pos-product-body">
 
 
-<div class="row g-2 g-sm-3" id="productList">
+<div class="row g-2 g-sm-3 pos-product-grid" id="productList">
 
 
 
@@ -587,6 +587,29 @@ box-shadow:0 15px 40px rgba(15,23,42,.08);
 
 }
 
+/* Daftar produk tetap ringkas meski jumlah produk bertambah banyak. */
+.pos-product-panel {
+    display: flex;
+    flex-direction: column;
+    height: min(44rem, calc(100dvh - 2rem));
+}
+
+.pos-product-body {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+
+.pos-product-grid {
+    --bs-gutter-x: .75rem;
+    --bs-gutter-y: .75rem;
+}
+
+.pos-product-grid .product-item {
+    display: flex;
+}
+
 
 
 
@@ -651,6 +674,13 @@ margin:5px 0 0;
     margin-top: auto;
 }
 
+.product-name {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
 .qris-payment-panel {
     padding: 1rem;
     border: 1px solid #bfdbfe;
@@ -668,6 +698,18 @@ margin:5px 0 0;
 }
 
 @media (max-width: 575.98px) {
+    .pos-product-panel {
+        height: min(34rem, 58dvh);
+    }
+
+    .pos-product-panel .card-header,
+    .pos-product-panel .card-body,
+    .pos-card .card-header,
+    .pos-card .card-body {
+        padding-right: 1rem !important;
+        padding-left: 1rem !important;
+    }
+
     .product-card {
         padding: 12px;
         border-radius: 14px;
@@ -757,6 +799,13 @@ function updatePaymentMethod() {
 
     const result=paid.value-totalAmount;
     change.value='Rp '+Math.max(result,0).toLocaleString('id-ID');
+}
+
+@media (min-width: 1200px) {
+    .pos-product-panel {
+        position: sticky;
+        top: 1rem;
+    }
 }
 
 

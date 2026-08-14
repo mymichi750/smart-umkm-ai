@@ -69,6 +69,13 @@
                     </div>
                 </div>
 
+                @if($transaction->payment_method === 'qris')
+                    <div class="mt-4 pt-4 border-top text-center">
+                        <h6 class="mb-3">Kode QRIS Pembayaran</h6>
+                        <img src="{{ asset($transaction->qris_image ?: 'images/qris.jpeg') }}" alt="Kode QRIS transaksi {{ $transaction->invoice }}" class="img-fluid border rounded p-2" style="max-width: 280px;">
+                    </div>
+                @endif
+
                 @if($transaction->notes)
                     <div class="mt-4">
                         <h6>Catatan</h6>

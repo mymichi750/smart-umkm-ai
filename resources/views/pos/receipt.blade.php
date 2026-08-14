@@ -38,6 +38,8 @@
         .summary { width: min(100%, 280px); margin-left: auto; }
         .summary-row { display: flex; justify-content: space-between; gap: 24px; padding: 7px 0; }
         .summary-row--total { border-top: 1px solid #cbd5e1; margin-top: 6px; padding-top: 12px; font-size: 16px; }
+        .qris-section { margin: 28px auto 0; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; }
+        .qris-image { width: min(100%, 220px); border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; }
         .receipt-footer { margin: 28px 0 0; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 13px; text-align: center; }
         @media (max-width: 560px) {
             .receipt-page { width: min(100% - 24px, 720px); margin: 12px auto; }
@@ -101,6 +103,13 @@
                 <div class="summary-row"><span>Dibayar</span><strong>Rp {{ number_format($transaction->paid, 0, ',', '.') }}</strong></div>
                 <div class="summary-row"><span>Kembalian</span><strong>Rp {{ number_format($transaction->change, 0, ',', '.') }}</strong></div>
             </div>
+
+            @if($transaction->payment_method === 'qris')
+                <div class="qris-section">
+                    <strong>Kode QRIS Pembayaran</strong><br>
+                    <img src="{{ asset($transaction->qris_image ?: 'images/qris.jpeg') }}" alt="Kode QRIS transaksi {{ $transaction->invoice }}" class="qris-image">
+                </div>
+            @endif
 
             <p class="receipt-footer">Terima kasih telah berbelanja.</p>
         </section>

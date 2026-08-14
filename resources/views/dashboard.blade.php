@@ -258,6 +258,70 @@
                                 </div>
                             </div>
 
+                            <!-- PELANGGAN UNTUK DITINDAKLANJUTI -->
+                            <div class="col-12">
+                                <div class="card h-100 bg-gradient-light border-0">
+                                    <div class="card-body">
+                                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+                                            <div>
+                                                <h6 class="fw-bold mb-1">
+                                                    <i class="bi bi-person-hearts text-danger me-2"></i>Pelanggan Perlu Dihubungi
+                                                </h6>
+                                                <p class="text-muted small mb-0">Pelanggan yang berbelanja minimal 3 hari dalam 30 hari terakhir, tetapi belum membeli hari ini.</p>
+                                            </div>
+                                            <span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">
+                                                {{ $followUpCustomers->count() }} perlu follow-up
+                                            </span>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="table table-sm align-middle mb-0">
+                                                <thead>
+                                                    <tr class="text-muted small">
+                                                        <th scope="col">Pelanggan</th>
+                                                        <th scope="col">Nomor</th>
+                                                        <th scope="col">Kebiasaan Belanja</th>
+                                                        <th scope="col">Pembelian Terakhir</th>
+                                                        <th scope="col" class="text-end">Tindakan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($followUpCustomers as $customer)
+                                                        @php
+                                                            $whatsappNumber = preg_replace('/\D+/', '', $customer->phone);
+                                                            $whatsappNumber = str_starts_with($whatsappNumber, '0')
+                                                                ? '62' . substr($whatsappNumber, 1)
+                                                                : (str_starts_with($whatsappNumber, '8') ? '62' . $whatsappNumber : $whatsappNumber);
+                                                            $message = "Halo {$customer->name}, kami melihat Anda belum berbelanja hari ini. Ada kebutuhan yang bisa kami bantu?";
+                                                        @endphp
+                                                        <tr>
+                                                            <td class="fw-semibold">{{ $customer->name }}</td>
+                                                            <td>{{ $customer->phone }}</td>
+                                                            <td>
+                                                                <span class="badge bg-primary-subtle text-primary-emphasis">{{ $customer->purchase_days }} hari / 30 hari</span>
+                                                                <div class="small text-muted">{{ $customer->transaction_count }} transaksi</div>
+                                                            </td>
+                                                            <td>{{ \Carbon\Carbon::parse($customer->last_purchase_at)->locale('id')->translatedFormat('d M Y, H:i') }}</td>
+                                                            <td class="text-end">
+                                                                <a href="https://wa.me/{{ $whatsappNumber }}?text={{ urlencode($message) }}" target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm">
+                                                                    <i class="bi bi-whatsapp me-1"></i>Chat WhatsApp
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="5" class="text-center text-muted py-4">
+                                                                <i class="bi bi-check-circle me-1 text-success"></i>Semua pelanggan rutin dengan nomor telepon sudah berbelanja hari ini.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

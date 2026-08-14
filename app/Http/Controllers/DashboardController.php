@@ -79,6 +79,13 @@ class DashboardController extends Controller
         // ==========================================================
         $profit = $this->buildProfitSummary();
 
+        // ==========================================================
+        // 5. PELANGGAN YANG PERLU DITINDAKLANJUTI
+        // Pelanggan dianggap rutin bila berbelanja pada minimal tiga
+        // hari berbeda dalam 30 hari terakhir, tetapi belum membeli hari ini.
+        // ==========================================================
+        $followUpCustomers = $this->buildFollowUpCustomers($today);
+
         return view('dashboard', compact(
             'salesToday',
             'transactionsToday',
@@ -90,7 +97,8 @@ class DashboardController extends Controller
             'trendDirection',
             'growth',
             'stockPredictions',
-            'profit'
+            'profit',
+            'followUpCustomers'
         ));
     }
 
@@ -167,5 +175,35 @@ class DashboardController extends Controller
             'net_profit' => $netProfit,
             'margin' => $margin,
         ];
+    }
+
+    /**
+     * Pelanggan rutin yang belum melakukan transaksi pada hari ini.
+     */
+    protected function buildFollowUpCustomers(Carbon $today)
+    {
+        $since = $today->copy()->subDays(29)->startOfDay();
+
+        return Customer::query()
+            ->select('customers.id', 'customers.name', 'customers.phone')
+            ->selectRaw('COUNT(DISTINCT DATE(transactions.created_at)) as purchase_days')
+            ->selectRaw('COUNT(transactions.id) as transaction_count')
+            ->selectRaw('MAX(transactions.created_at) as last_purchase_at')
+            ->join('transactions', 'transactions.customer_id', '=', 'customers.id')
+            ->where('transactions.created_at', '>=', $since)
+            ->whereNotNull('customers.phone')
+            ->where('customers.phone', '!=', '')
+            ->whereNotExists(function ($query) use ($today) {
+                $query->select(DB::raw(1))
+                    ->from('transactions as today_transactions')
+                    ->whereColumn('today_transactions.customer_id', 'customers.id')
+                    ->whereDate('today_transactions.created_at', $today);
+            })
+            ->groupBy('customers.id', 'customers.name', 'customers.phone')
+            ->havingRaw('COUNT(DISTINCT DATE(transactions.created_at)) >= 3')
+            ->orderByDesc('purchase_days')
+            ->orderByDesc('last_purchase_at')
+            ->limit(10)
+            ->get();
     }
 }
