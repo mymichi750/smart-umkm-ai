@@ -54,9 +54,6 @@ class AIAssistantController extends Controller
                             ],
                         ],
                     ],
-                    'generationConfig' => [
-                        'temperature' => 0.2,
-                    ],
                 ]);
 
             if (! $response->successful()) {
@@ -189,9 +186,6 @@ PROMPT;
                                 ],
                             ],
                         ],
-                        'generationConfig' => [
-                            'temperature' => 0.7,
-                        ],
                     ]
                 );
 
@@ -201,7 +195,7 @@ PROMPT;
                     'body' => $response->body(),
                 ]);
 
-                return 'Maaf, layanan AI saat ini sudah mencapai batas penggunaan. Anda perlu menggunakan paket premium untuk dapat mengajukan pertanyaan lagi.';
+                return $this->geminiErrorMessage($response->status());
             }
 
             $reply = data_get($response->json(), 'candidates.0.content.parts.0.text');
@@ -216,6 +210,16 @@ PROMPT;
 
             return 'Maaf, terjadi kesalahan saat menghubungkan AI. Silakan coba lagi.';
         }
+    }
+
+    protected function geminiErrorMessage(int $status): string
+    {
+        return match ($status) {
+            401, 403 => 'Maaf, konfigurasi API Gemini tidak valid atau tidak memiliki izin. Silakan periksa GEMINI_API_KEY.',
+            404 => 'Maaf, model Gemini yang dikonfigurasi tidak tersedia. Silakan periksa GEMINI_MODEL.',
+            429 => 'Maaf, batas penggunaan Gemini sedang tercapai. Silakan coba lagi beberapa saat lagi.',
+            default => 'Maaf, layanan AI sedang mengalami gangguan. Silakan coba lagi.',
+        };
     }
 
     /**

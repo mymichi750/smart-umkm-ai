@@ -9,7 +9,8 @@ class GeminiService
 {
     public function generate($prompt)
     {
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key');
+        $model = config('services.gemini.model', 'gemini-3.5-flash-lite');
 
         if (!$apiKey) {
             return [
@@ -23,7 +24,7 @@ class GeminiService
                 'Content-Type' => 'application/json',
             ])
             ->post(
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}",
+                "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}",
                 [
                     'contents' => [
                         [
@@ -35,9 +36,8 @@ class GeminiService
                         ]
                     ],
                     'generationConfig' => [
-                        'temperature' => 0.7,
                         'maxOutputTokens' => 1000,
-                    ]
+                    ],
                 ]
             );
 
