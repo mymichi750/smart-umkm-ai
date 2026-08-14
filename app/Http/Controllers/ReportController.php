@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCashFlowRequest;
 use App\Models\CashFlow;
+use App\Models\Product;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class ReportController extends Controller
         $capital = (float) $cashFlows->where('type', CashFlow::CAPITAL)->sum('amount');
         $expenses = (float) $cashFlows->whereIn('type', [CashFlow::EXPENSE, CashFlow::STOCK_PURCHASE])->sum('amount');
         $openingBalance = $this->cashBalanceBefore($start);
+        $businessHealth = $this->buildBusinessHealth($start, $end, $sales, $capital, $expenses, $openingBalance);
 
         $history = $this->history($transactions, $cashFlows);
         $page = LengthAwarePaginator::resolveCurrentPage();
@@ -45,7 +47,7 @@ class ReportController extends Controller
             ['path' => LengthAwarePaginator::resolveCurrentPath(), 'query' => $request->query()]
         );
 
-        return view('reports.index', compact('entries', 'start', 'end', 'sales', 'capital', 'expenses', 'openingBalance'));
+        return view('reports.index', compact('entries', 'start', 'end', 'sales', 'capital', 'expenses', 'openingBalance', 'businessHealth'));
     }
 
     public function storeCashFlow(StoreCashFlowRequest $request)
@@ -88,6 +90,63 @@ class ReportController extends Controller
             ->sum('amount');
 
         return $sales + $capital - $expenses;
+    }
+
+    /**
+     * Ringkasan kesehatan usaha dari data kas dan omzet pada periode aktif.
+     */
+    private function buildBusinessHealth(Carbon $start, Carbon $end, float $sales, float $capital, float $expenses, float $openingBalance): array
+    {
+        $days = max(1, $start->diffInDays($end) + 1);
+        $previousEnd = $start->copy()->subDay()->endOfDay();
+        $previousStart = $previousEnd->copy()->subDays($days - 1)->startOfDay();
+        $previousSales = (float) Transaction::whereBetween('created_at', [$previousStart, $previousEnd])->sum('total');
+        $salesChange = $previousSales > 0
+            ? round((($sales - $previousSales) / $previousSales) * 100, 1)
+            : ($sales > 0 ? 100.0 : 0.0);
+        $cashChange = $sales + $capital - $expenses;
+        $closingBalance = $openingBalance + $cashChange;
+        $expenseRatio = $sales > 0 ? round(($expenses / $sales) * 100, 1) : null;
+        $lowStockCount = Product::where('stock', '<=', 5)->count();
+
+        $trend = $salesChange > 0 ? 'naik' : ($salesChange < 0 ? 'turun' : 'stabil');
+        $score = 50;
+        $score += $salesChange >= 10 ? 20 : ($salesChange > 0 ? 10 : ($salesChange <= -10 ? -20 : 0));
+        $score += $cashChange > 0 ? 15 : ($cashChange < 0 ? -15 : 0);
+        $score += $expenseRatio !== null && $expenseRatio <= 60 ? 10 : ($expenseRatio !== null && $expenseRatio > 90 ? -10 : 0);
+        $score -= min($lowStockCount * 3, 15);
+        $score = max(0, min(100, $score));
+
+        $status = $score >= 75 ? ['Sangat sehat', 'success', '🌟'] : ($score >= 55 ? ['Cukup sehat', 'primary', '🙂'] : ['Perlu perhatian', 'warning', '💪']);
+        $suggestions = [];
+        $suggestions[] = $trend === 'naik'
+            ? 'Omzet naik. Pertahankan stok produk yang paling cepat laku dan promosikan paket belanja. 🚀'
+            : ($trend === 'turun'
+                ? 'Omzet turun. Coba promo sederhana untuk kebutuhan harian dan ingatkan pelanggan tetap. 📣'
+                : 'Omzet masih stabil. Buat promo kecil agar pelanggan punya alasan untuk berbelanja lebih banyak. ✨');
+        if ($expenseRatio !== null && $expenseRatio > 70) {
+            $suggestions[] = 'Kas keluar mencapai '.$expenseRatio.'% dari omzet. Tinjau pengeluaran dan pembelian stok agar modal tetap aman. 💰';
+        } elseif ($cashChange > 0) {
+            $suggestions[] = 'Arus kas periode ini positif. Sisihkan sebagian surplus sebagai dana cadangan warung. 🐷';
+        }
+        if ($lowStockCount > 0) {
+            $suggestions[] = $lowStockCount.' produk stoknya menipis. Prioritaskan pengadaan barang yang paling sering dicari. 📦';
+        }
+
+        return [
+            'score' => $score,
+            'status' => $status[0],
+            'color' => $status[1],
+            'emoji' => $status[2],
+            'trend' => $trend,
+            'sales_change' => $salesChange,
+            'previous_sales' => $previousSales,
+            'cash_change' => $cashChange,
+            'closing_balance' => $closingBalance,
+            'expense_ratio' => $expenseRatio,
+            'low_stock_count' => $lowStockCount,
+            'suggestions' => $suggestions,
+        ];
     }
 
     private function history(Collection $transactions, Collection $cashFlows): Collection
