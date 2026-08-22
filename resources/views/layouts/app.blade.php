@@ -8,6 +8,13 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
     <title>
         {{ config('app.name', 'Smart UMKM AI') }}
     </title>
@@ -114,6 +121,11 @@
                 <!-- USER -->
 
                 <div class="ms-auto d-flex align-items-center gap-3">
+
+
+                    <button id="themeToggleBtn" class="btn btn-link border-0 text-decoration-none p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" type="button" aria-label="Ubah tema">
+                        <i class="bi bi-sun-fill text-warning fs-5" id="themeIcon"></i>
+                    </button>
 
 
                     <div class="d-none d-md-block welcome-text">
@@ -267,16 +279,40 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const sidebar = document.getElementById('sidebarMenu');
-        if (!sidebar || !window.bootstrap) return;
-
-        // Pada layar kecil, tutup menu setelah pengguna memilih halaman.
-        sidebar.querySelectorAll('a.nav-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                if (window.matchMedia('(max-width: 991.98px)').matches) {
-                    bootstrap.Offcanvas.getOrCreateInstance(sidebar).hide();
-                }
+        if (sidebar && window.bootstrap) {
+            // Pada layar kecil, tutup menu setelah pengguna memilih halaman.
+            sidebar.querySelectorAll('a.nav-link').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    if (window.matchMedia('(max-width: 991.98px)').matches) {
+                        bootstrap.Offcanvas.getOrCreateInstance(sidebar).hide();
+                    }
+                });
             });
-        });
+        }
+
+        // Theme switching logic
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        function updateThemeUI(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'bi bi-moon-stars-fill text-info fs-5';
+            } else {
+                themeIcon.className = 'bi bi-sun-fill text-warning fs-5';
+            }
+        }
+        
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        updateThemeUI(currentTheme);
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', function () {
+                const newTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+        }
     });
 </script>
 

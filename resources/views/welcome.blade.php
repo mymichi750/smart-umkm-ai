@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
 
     <title>{{ config('app.name', 'Smart UMKM POS') }}</title>
 
@@ -223,11 +230,82 @@
                 width:100%;
             }
         }
+        
+        .theme-toggle-floating {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+        
+        [data-bs-theme="dark"] body {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #0f172a);
+            color: #f8fafc;
+        }
+        [data-bs-theme="dark"] .hero-title {
+            color: #ffffff;
+        }
+        [data-bs-theme="dark"] .hero-subtitle {
+            color: #94a3b8;
+        }
+        [data-bs-theme="dark"] .feature-card {
+            background: #1e293b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+        }
+        [data-bs-theme="dark"] .feature-icon {
+            background: rgba(79, 70, 229, 0.2);
+            color: #818cf8;
+        }
+        [data-bs-theme="dark"] .preview-card {
+            background: #1e293b;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .3);
+        }
+        [data-bs-theme="dark"] .section-title {
+            color: #ffffff;
+        }
+        [data-bs-theme="dark"] .section-text {
+            color: #94a3b8;
+        }
+        [data-bs-theme="dark"] .help-chatbot {
+            background: #1e293b;
+            border-color: #334155;
+            box-shadow: 0 18px 48px rgba(0,0,0,.4);
+        }
+        [data-bs-theme="dark"] .help-chatbot__messages {
+            background: #0f172a;
+        }
+        [data-bs-theme="dark"] .help-chatbot__message--bot {
+            background: #312e81;
+            color: #e0e7ff;
+        }
+        [data-bs-theme="dark"] .help-chatbot__message a {
+            color: #818cf8;
+        }
+        [data-bs-theme="dark"] .help-chatbot__quick-action {
+            background: #1e293b;
+            color: #c7d2fe;
+            border-color: #4338ca;
+        }
+        [data-bs-theme="dark"] .help-chatbot__input {
+            background: #0f172a;
+            color: #f8fafc;
+            border-color: #334155;
+        }
+        [data-bs-theme="dark"] .theme-toggle-floating .btn {
+            background: #1e293b;
+            border-color: #334155;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
 
-<div class="welcome-shell">
+<div class="welcome-shell position-relative">
+    <div class="theme-toggle-floating">
+        <button id="themeToggleBtn" class="btn btn-light shadow-sm border rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" type="button" aria-label="Ubah tema">
+            <i class="bi bi-sun-fill text-warning fs-5" id="themeIcon"></i>
+        </button>
+    </div>
     <div class="container py-5">
 
         <div class="row align-items-center g-5">
@@ -381,6 +459,30 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Theme switching logic
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        function updateThemeUI(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'bi bi-moon-stars-fill text-info fs-5';
+            } else {
+                themeIcon.className = 'bi bi-sun-fill text-warning fs-5';
+            }
+        }
+        
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        updateThemeUI(currentTheme);
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', function () {
+                const newTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+        }
+
         const chatbot = document.getElementById('helpChatbot');
         const toggle = document.getElementById('helpChatToggle');
         const close = document.getElementById('helpChatClose');
