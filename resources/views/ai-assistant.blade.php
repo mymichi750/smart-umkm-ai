@@ -13,8 +13,76 @@
     </x-slot>
 
     <div class="container-fluid">
-        <div class="card border-0 shadow-sm overflow-hidden" style="background: linear-gradient(135deg, #f8fbff 0%, #eef5ff 100%);">
+
+        @if($locked ?? false)
+        {{-- ===================== UPGRADE PROMPT ===================== --}}
+        <div class="card border-0 shadow-sm text-center py-5 px-4">
+            <div class="card-body">
+                <div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-4"
+                     style="width: 80px; height: 80px;">
+                    <i class="bi bi-lock-fill fs-2 text-warning"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Fitur AI Terkunci</h4>
+                <p class="text-muted mb-4" style="max-width: 420px; margin: 0 auto;">
+                    Masa trial gratis Anda telah berakhir. Upgrade ke <strong>Premium 2</strong> atau <strong>Premium 3</strong>
+                    untuk terus menganalisis penjualan, stok, pelanggan, dan mendapatkan rekomendasi bisnis berbasis data.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center mb-4">
+                    <div class="border rounded-3 p-3 text-start" style="min-width: 180px;">
+                        <div class="fw-bold text-primary mb-1">Premium 2</div>
+                        <div class="fw-bold fs-5 mb-1">Rp49.000<span class="text-muted fw-normal fs-6">/bln</span></div>
+                        <div class="small text-muted">AI analisis usaha &amp; penjualan</div>
+                    </div>
+                    <div class="border border-primary rounded-3 p-3 text-start" style="min-width: 180px;">
+                        <div class="fw-bold text-primary mb-1">Premium 3 <span class="badge bg-primary ms-1" style="font-size:.65rem;">Lengkap</span></div>
+                        <div class="fw-bold fs-5 mb-1">Rp99.000<span class="text-muted fw-normal fs-6">/bln</span></div>
+                        <div class="small text-muted">Akses semua fitur AI</div>
+                    </div>
+                </div>
+                <button type="button"
+                        class="btn btn-warning fw-bold px-5"
+                        data-bs-toggle="modal"
+                        data-bs-target="#premiumModal">
+                    <i class="bi bi-stars me-2"></i>Upgrade Sekarang
+                </button>
+            </div>
+        </div>
+        {{-- ===================== END UPGRADE PROMPT ===================== --}}
+
+        @else
+        {{-- ===================== CHAT INTERFACE ===================== --}}
+        <div class="card border-0 shadow-sm overflow-hidden">
             <div class="card-body p-0">
+
+                {{-- Banner trial aktif --}}
+                @if($onTrial ?? false)
+                @php
+                    $trialDaysLeft = (int) now()->diffInDays($trialEndsAt, false);
+                    $trialHoursLeft = (int) now()->diffInHours($trialEndsAt, false);
+                    $trialBadgeClass = $trialDaysLeft <= 3 ? 'alert-danger' : ($trialDaysLeft <= 7 ? 'alert-warning' : 'alert-info');
+                    $trialIcon = $trialDaysLeft <= 3 ? 'bi-alarm-fill text-danger' : 'bi-gift-fill text-primary';
+                @endphp
+                <div class="alert {{ $trialBadgeClass }} rounded-0 border-0 border-bottom mb-0 py-2 px-4 d-flex align-items-center justify-content-between flex-wrap gap-2" role="alert">
+                    <div class="d-flex align-items-center gap-2 small">
+                        <i class="bi {{ $trialIcon }}"></i>
+                        <span>
+                            <strong>Masa Trial Aktif</strong> &mdash;
+                            @if($trialDaysLeft > 0)
+                                Berakhir dalam <strong id="trialCountdown">{{ $trialDaysLeft }} hari</strong>
+                                ({{ $trialEndsAt->locale('id')->translatedFormat('d M Y') }})
+                            @else
+                                Berakhir dalam <strong id="trialCountdown">{{ $trialHoursLeft }} jam</strong>
+                            @endif
+                        </span>
+                    </div>
+                    <button type="button"
+                            class="btn btn-sm btn-primary py-1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#premiumModal">
+                        <i class="bi bi-stars me-1"></i>Upgrade Sekarang
+                    </button>
+                </div>
+                @endif
                 <div class="p-4 border-bottom border-light">
                     <div class="row g-3 align-items-center">
                         <div class="col-lg-8">
@@ -33,7 +101,7 @@
                                 <form action="{{ route('ai-assistant.clear') }}" method="POST" onsubmit="return confirm('Hapus seluruh riwayat chat?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Hapus riwayat chat" aria-label="Hapus riwayat chat">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm no-loader" title="Hapus riwayat chat" aria-label="Hapus riwayat chat">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -50,7 +118,7 @@
                     </div>
                 </div>
 
-                <div class="chat-shell p-3 p-md-4" id="chatShell" style="overflow-y: auto; background: #f8fbff;">
+                <div class="chat-shell p-3 p-md-4" id="chatShell" style="overflow-y: auto;">
                     @php($messages = $messages ?? [])
                     @if (empty($messages))
                         <div class="d-flex justify-content-start mb-3">
@@ -86,8 +154,8 @@
                     </div>
                 </div>
 
-                <div class="border-top bg-white p-3 p-md-4">
-                    <form id="chatForm" class="d-flex gap-2 align-items-end">
+                <div class="border-top bg-transparent p-3 p-md-4">
+                    <form id="chatForm" class="d-flex gap-2 align-items-end no-loader">
                         @csrf
                         <div class="flex-grow-1">
                             <textarea id="messageInput" class="form-control" rows="2" placeholder="Tanyakan tentang pelanggan, penjualan, stok, atau kas..." required></textarea>
@@ -99,6 +167,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 
     @push('styles')
@@ -128,8 +197,8 @@
             }
 
             .chat-bubble--ai {
-                background: #ffffff;
-                color: #0f172a;
+                background: var(--bs-tertiary-bg);
+                color: var(--bs-body-color);
                 border-bottom-left-radius: 0.35rem;
             }
 
@@ -265,14 +334,21 @@ body.innerHTML = content;
                         },
                         body: JSON.stringify({ message: message })
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (response.status === 403) {
+                            return response.json().then(data => {
+                                throw new Error(data.error || 'Akses ditolak. Silakan upgrade paket premium Anda.');
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         typingIndicator.classList.add('d-none');
                         appendMessage('assistant', data.reply, data.messages[data.messages.length - 1].time);
                     })
-                    .catch(() => {
+                    .catch((err) => {
                         typingIndicator.classList.add('d-none');
-                        appendMessage('assistant', 'Maaf, terjadi kesalahan saat menghubungkan AI.', getWibTime());
+                        appendMessage('assistant', err.message || 'Maaf, terjadi kesalahan saat menghubungkan AI.', getWibTime());
                     });
                 });
 
@@ -291,6 +367,38 @@ body.innerHTML = content;
                 });
 
                 scrollToBottom();
+
+                @if($onTrial ?? false)
+                // Countdown timer trial
+                (function () {
+                    const endTime = new Date('{{ $trialEndsAt->toIso8601String() }}');
+                    const el = document.getElementById('trialCountdown');
+                    if (!el) return;
+
+                    function update() {
+                        const diff = endTime - Date.now();
+                        if (diff <= 0) {
+                            el.textContent = 'Habis';
+                            return;
+                        }
+                        const days  = Math.floor(diff / 86400000);
+                        const hours = Math.floor((diff % 86400000) / 3600000);
+                        const mins  = Math.floor((diff % 3600000) / 60000);
+                        const secs  = Math.floor((diff % 60000) / 1000);
+
+                        if (days > 0) {
+                            el.textContent = days + ' hari ' + hours + ' jam';
+                        } else if (hours > 0) {
+                            el.textContent = hours + ' jam ' + mins + ' menit';
+                        } else {
+                            el.textContent = mins + ' menit ' + secs + ' detik';
+                        }
+                    }
+
+                    update();
+                    setInterval(update, 1000);
+                })();
+                @endif
             });
         </script>
     @endpush

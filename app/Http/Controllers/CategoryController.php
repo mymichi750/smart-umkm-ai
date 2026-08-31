@@ -5,12 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $categories = Category::orderBy('name')->paginate(15);
+        $categories = Category::where('store_id', auth()->user()->store_id)
+            ->when($request->q, function($query, $q) {
+                $query->where('name', 'like', "%{$q}%");
+            })
+            ->orderBy($request->sort === 'newest' ? 'created_at' : 'name', $request->sort === 'newest' ? 'desc' : 'asc')
+            ->paginate(10)->withQueryString();
 
         return view('categories.index', compact('categories'));
     }
@@ -22,9 +29,39 @@ class CategoryController extends Controller
 
     public function store(StoreCategoryRequest $request)
     {
-        Category::create($request->validated());
+        $data = $request->validated();
+        $data['slug'] = Str::slug($request->name) . '-' . uniqid();
+        $data['store_id'] = auth()->user()->store_id;
+        $data['user_id'] = auth()->id();
+        Category::create($data);
 
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
+    }
+
+    /**
+     * Quick-store a category via AJAX (returns JSON).
+     * Used by the inline "tambah kategori" feature on product forms.
+     */
+    public function quickStore(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $category = Category::create([
+            'name'     => $request->name,
+            'slug'     => Str::slug($request->name) . '-' . uniqid(),
+            'store_id' => auth()->user()->store_id,
+            'user_id'  => auth()->id(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'category' => [
+                'id'   => $category->id,
+                'name' => $category->name,
+            ],
+        ]);
     }
 
     public function show(Category $category)
