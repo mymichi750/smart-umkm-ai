@@ -100,17 +100,23 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="card shadow-sm">
-                    <div class="card-header border-bottom bg-white">
-                        <h5 class="mb-0">Produk Stok Menipis</h5>
+                <div class="card shadow-sm low-stock-card">
+                    <div class="card-header border-bottom">
+                        <h5 class="mb-0 d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                            Produk Stok Menipis
+                        </h5>
                     </div>
-<div class="card-body">
+                    <div class="card-body">
                         <ul class="list-group list-group-flush">
                             @forelse($lowStockProducts as $product)
                                 <li class="list-group-item low-stock-item px-0 py-3 border-0 border-bottom rounded-0">
+                                    <div class="low-stock-item__icon" aria-hidden="true">
+                                        <i class="bi {{ $product->iconClass() }}"></i>
+                                    </div>
                                     <div class="low-stock-item__info">
-                                        <strong>{{ $product->name }}</strong>
-                                        <div class="text-muted small">SKU: {{ $product->sku ?? '-' }}</div>
+                                        <div class="low-stock-item__name" title="{{ $product->name }}">{{ $product->name }}</div>
+                                        <div class="low-stock-item__sku">SKU: {{ $product->sku ?? '-' }}</div>
                                     </div>
                                     <div class="low-stock-item__status">
                                         <div class="progress low-stock-item__progress">
@@ -120,13 +126,11 @@
                                                  aria-valuemin="0" aria-valuemax="100">
                                             </div>
                                         </div>
-                                        <span class="badge bg-warning text-dark rounded-pill">
-                                            {{ $product->stock }}
-                                        </span>
+                                        <span class="low-stock-item__qty">{{ $product->stock }}</span>
                                     </div>
                                 </li>
                             @empty
-                                <li class="list-group-item text-center text-muted">Tidak ada produk dengan stok menipis.</li>
+                                <li class="list-group-item text-center text-muted border-0 px-0">Tidak ada produk dengan stok menipis.</li>
                             @endforelse
                         </ul>
                     </div>

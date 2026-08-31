@@ -17,9 +17,25 @@ class AIAssistantController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+
+        if (! $user->canUseAi()) {
+            return view('ai-assistant', [
+                'messages'  => [],
+                'locked'    => true,
+                'onTrial'   => false,
+                'trialEndsAt' => null,
+            ]);
+        }
+
         $messages = session('ai_chat_messages', []);
 
-        return view('ai-assistant', compact('messages'));
+        return view('ai-assistant', [
+            'messages'    => $messages,
+            'locked'      => false,
+            'onTrial'     => $user->isOnTrial(),
+            'trialEndsAt' => $user->trial_ends_at,
+        ]);
     }
 
     public function clearChat()
@@ -91,6 +107,13 @@ class AIAssistantController extends Controller
 
     public function send(Request $request)
     {
+        // Gate: hanya trial aktif atau premium_level >= 2
+        if (! auth()->user()->canUseAi()) {
+            return response()->json([
+                'error' => 'Masa trial Anda telah berakhir. Upgrade ke Premium 2 atau 3 untuk terus menggunakan AI.',
+            ], 403);
+        }
+
         $request->validate([
             'message' => ['required', 'string', 'max:2000'],
         ]);
@@ -227,6 +250,8 @@ PROMPT;
      */
     protected function buildBusinessContext(): string
     {
+        $storeId = auth()->user()->store_id;
+
         $now = Carbon::now();
         $today = $now->copy()->startOfDay();
         $last7Start = $now->copy()->subDays(6)->startOfDay();
@@ -234,11 +259,11 @@ PROMPT;
         $previous7End = $now->copy()->subDays(7)->endOfDay();
         $last30Start = $now->copy()->subDays(29)->startOfDay();
 
-        $salesToday = (float) Transaction::whereDate('created_at', $today)->sum('total');
-        $transactionsToday = Transaction::whereDate('created_at', $today)->count();
-        $salesLast7Days = (float) Transaction::whereBetween('created_at', [$last7Start, $now])->sum('total');
-        $salesPrevious7Days = (float) Transaction::whereBetween('created_at', [$previous7Start, $previous7End])->sum('total');
-        $salesLast30Days = (float) Transaction::whereBetween('created_at', [$last30Start, $now])->sum('total');
+        $salesToday = (float) Transaction::where('store_id', $storeId)->whereDate('created_at', $today)->sum('total');
+        $transactionsToday = Transaction::where('store_id', $storeId)->whereDate('created_at', $today)->count();
+        $salesLast7Days = (float) Transaction::where('store_id', $storeId)->whereBetween('created_at', [$last7Start, $now])->sum('total');
+        $salesPrevious7Days = (float) Transaction::where('store_id', $storeId)->whereBetween('created_at', [$previous7Start, $previous7End])->sum('total');
+        $salesLast30Days = (float) Transaction::where('store_id', $storeId)->whereBetween('created_at', [$last30Start, $now])->sum('total');
 
         $growth = $salesPrevious7Days > 0
             ? round((($salesLast7Days - $salesPrevious7Days) / $salesPrevious7Days) * 100, 1)
@@ -246,7 +271,9 @@ PROMPT;
 
         $topProducts = TransactionDetail::query()
             ->join('products', 'transaction_details.product_id', '=', 'products.id')
-            ->whereHas('transaction', fn ($query) => $query->whereBetween('created_at', [$last30Start, $now]))
+            ->whereHas('transaction', fn ($query) => $query
+                ->where('store_id', $storeId)
+                ->whereBetween('created_at', [$last30Start, $now]))
             ->select('products.name')
             ->selectRaw('SUM(transaction_details.quantity) as quantity_sold')
             ->selectRaw('SUM(transaction_details.subtotal) as revenue')
@@ -262,6 +289,7 @@ PROMPT;
             ->values();
 
         $lowStockProducts = Product::query()
+            ->where('store_id', $storeId)
             ->where('active', true)
             ->where('stock', '<=', 5)
             ->orderBy('stock')
@@ -274,6 +302,7 @@ PROMPT;
             ->values();
 
         $dailySales = Transaction::query()
+            ->where('store_id', $storeId)
             ->selectRaw('DATE(created_at) as tanggal, SUM(total) as omzet, COUNT(*) as transaksi')
             ->whereBetween('created_at', [$last7Start, $now])
             ->groupBy('tanggal')
@@ -288,6 +317,7 @@ PROMPT;
 
         $customerPurchases = Customer::query()
             ->join('transactions', 'customers.id', '=', 'transactions.customer_id')
+            ->where('transactions.store_id', $storeId)
             ->whereBetween('transactions.created_at', [$last30Start, $now])
             ->select('customers.id', 'customers.name')
             ->selectRaw('COUNT(DISTINCT transactions.id) as jumlah_transaksi')
@@ -302,6 +332,7 @@ PROMPT;
             ->join('transactions', 'transaction_details.transaction_id', '=', 'transactions.id')
             ->join('customers', 'transactions.customer_id', '=', 'customers.id')
             ->join('products', 'transaction_details.product_id', '=', 'products.id')
+            ->where('transactions.store_id', $storeId)
             ->whereBetween('transactions.created_at', [$last30Start, $now])
             ->select('customers.id as customer_id', 'products.name as product_name')
             ->selectRaw('SUM(transaction_details.quantity) as quantity')
@@ -323,6 +354,7 @@ PROMPT;
         ])->values();
 
         $cashFlowLast30Days = CashFlow::query()
+            ->where('store_id', $storeId)
             ->whereBetween('created_at', [$last30Start, $now])
             ->select('type')
             ->selectRaw('SUM(amount) as total')
@@ -347,7 +379,7 @@ PROMPT;
             'stok_menipis' => $lowStockProducts,
             'penjualan_harian_7_hari' => $dailySales,
             'pelanggan' => [
-                'total_pelanggan_terdaftar' => Customer::count(),
+                'total_pelanggan_terdaftar' => Customer::whereHas('transactions', fn ($q) => $q->where('store_id', $storeId))->count(),
                 'pelanggan_bertransaksi_30_hari' => $customerPurchases->count(),
                 'daftar_pelanggan_pembeli_30_hari' => $customerPurchases,
             ],

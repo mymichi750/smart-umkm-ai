@@ -138,12 +138,56 @@
 
 .premium-trigger:hover { background: rgba(250, 204, 21, .26); color: #fff; }
 .user-role + .premium-trigger { margin-left: .45rem; }
-.premium-plan { height: 100%; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.1rem; }
-.premium-plan--featured { border: 2px solid #2563eb; background: #eff6ff; }
-.premium-plan__price { color: #0f172a; font-size: 1.35rem; font-weight: 800; }
-.premium-plan__feature { display: flex; gap: .45rem; margin: .55rem 0; color: #475569; font-size: .86rem; }
-.premium-plan__feature i { color: #16a34a; }
-.premium-plan__trial { margin: .85rem 0; padding: .7rem .75rem; border: 1px solid #bfdbfe; border-radius: .75rem; background: #eff6ff; color: #1e40af; font-size: .8rem; line-height: 1.45; }
+.premium-plan { 
+    height: 100%; 
+    border: 1px solid var(--bs-border-color); 
+    border-radius: 16px; 
+    padding: 1.1rem; 
+    background-color: var(--bs-body-bg);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.premium-plan--featured { 
+    border: 2px solid #3b82f6; 
+    background-color: rgba(59, 130, 246, 0.05); 
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
+}
+.premium-plan__price { 
+    color: var(--bs-heading-color); 
+    font-size: 1.35rem; 
+    font-weight: 800; 
+}
+.premium-plan__feature { 
+    display: flex; gap: .45rem; margin: .55rem 0; 
+    color: var(--bs-body-color); 
+    font-size: .86rem; 
+    opacity: 0.85;
+}
+.premium-plan__feature i { 
+    color: #22c55e; 
+}
+.premium-plan__feature i.text-danger { 
+    color: #ef4444 !important; 
+}
+.premium-plan__trial { 
+    margin: .85rem 0; padding: .7rem .75rem; 
+    border: 1px solid rgba(59, 130, 246, 0.3); 
+    border-radius: .75rem; 
+    background: rgba(59, 130, 246, 0.1); 
+    color: var(--bs-primary); 
+    font-size: .8rem; line-height: 1.45; 
+}
+[data-bs-theme="dark"] .premium-plan {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+[data-bs-theme="dark"] .premium-plan--featured {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-color: #3b82f6;
+}
+[data-bs-theme="dark"] .premium-plan__trial {
+    color: #93c5fd;
+}
 
 
 
@@ -351,8 +395,8 @@
                         SMART UMKM AI
                     </div>
 
-                    <div class="small text-white-50 d-none d-sm-block">
-                        Point of Sale System
+                    <div class="small text-warning fw-bold mt-1">
+                        <i class="bi bi-shop me-1"></i> {{ auth()->user()->store->name ?? 'Point of Sale' }}
                     </div>
                 </div>
 
@@ -388,8 +432,13 @@
                         {{ ucfirst(auth()->user()->role) }}
                     </span>
 
-                    <button type="button" class="premium-trigger" data-bs-toggle="modal" data-bs-target="#premiumModal">
-                        <i class="bi bi-stars"></i> Premium {{ auth()->user()->premium_level ?? 1 }}
+    <button type="button" class="premium-trigger" data-bs-toggle="modal" data-bs-target="#premiumModal">
+                        <i class="bi bi-stars"></i> 
+                        @if(auth()->user()->premium_pending_level)
+                            Premium {{ auth()->user()->premium_level ?? 1 }} <span class="opacity-75">(pending)</span>
+                        @else
+                            Premium {{ auth()->user()->premium_level ?? 1 }}
+                        @endif
                     </button>
 
                 </div>
@@ -513,69 +562,46 @@
 
 
             <li class="nav-item mb-1">
-
                 <a class="nav-link d-flex align-items-center px-3 py-3 
                 {{ request()->routeIs('reports.*') ? 'active' : '' }}" 
                 href="{{ route('reports.index') }}">
-
                     <i class="bi bi-bar-chart-line-fill me-3"></i>
-
                     Laporan
-
                 </a>
-
             </li>
 
-
-
-
-
-            @if(auth()->check())
+            @if(auth()->user() && auth()->user()->role === 'admin')
+            <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center px-3 py-3 
+                {{ request()->routeIs('users.*') ? 'active' : '' }}" 
+                href="{{ route('users.index') }}">
+                    <i class="bi bi-person-gear me-3"></i>
+                    Pengguna
+                </a>
+            </li>
+            @endif
 
             <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center px-3 py-3 
+                {{ request()->routeIs('qr-kasir.*') ? 'active' : '' }}" 
+                href="{{ route('qr-kasir.index') }}">
+                    <i class="bi bi-qr-code-scan me-3"></i>
+                    QR Kasir
+                </a>
+            </li>
 
+            @if(auth()->check())
+            <li class="nav-item mb-1">
                 <a class="nav-link d-flex flex-column align-items-center justify-content-center px-3 py-3 
                 {{ request()->routeIs('ai-assistant.*') ? 'active' : '' }}" 
                 href="{{ route('ai-assistant.index') }}"
                 aria-label="AI Assistant"
                 title="AI Assistant">
-
-                    <img src="{{ asset('images/logo.png') }}"
-                         alt=""
-                         class="ai-assistant-logo">
-
+                    <img src="{{ asset('images/logo.png') }}" alt="" class="ai-assistant-logo">
                     <span class="ai-assistant-label">AI Asisten</span>
-
                 </a>
-
             </li>
-
             @endif
-
-
-
-
-
-
-            @if(strtolower(auth()->user()->role ?? '') === 'admin')
-
-            <li class="nav-item mb-1">
-
-                <a class="nav-link d-flex align-items-center px-3 py-3 
-                {{ request()->routeIs('users.*') ? 'active' : '' }}" 
-                href="{{ route('users.index') }}">
-
-                    <i class="bi bi-person-gear me-3"></i>
-
-                    Pengguna
-
-                </a>
-
-            </li>
-
-            @endif
-
-
         </ul>
 
 
@@ -594,6 +620,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body p-4">
+                @if(auth()->user()->premium_pending_level)
+                <div class="alert alert-info d-flex align-items-start gap-2 mb-3 py-2" role="alert">
+                    <i class="bi bi-hourglass-split flex-shrink-0 mt-1"></i>
+                    <div class="small">
+                        <strong>Pengajuan Premium {{ auth()->user()->premium_pending_level }} sedang diverifikasi.</strong><br>
+                        Bukti pembayaran Anda sudah diterima. Admin akan mengaktifkan paket dalam 1×24 jam.
+                    </div>
+                </div>
+                @endif
                 <div class="row g-3">
                     <div class="col-md-4">
                         <section class="premium-plan">
@@ -603,7 +638,11 @@
                             <div class="text-muted small">Selamanya</div>
                             <div class="premium-plan__trial">
                                 <i class="bi bi-gift-fill me-1"></i>
-                                <strong>Bonus pengguna baru:</strong> akses semua fitur, termasuk AI, gratis selama 1 bulan.
+                                @if(auth()->user()->isOnTrial())
+                                    <strong>Trial aktif:</strong> AI gratis hingga {{ auth()->user()->trial_ends_at->locale('id')->translatedFormat('d M Y') }}.
+                                @else
+                                    <strong>Bonus pengguna baru:</strong> akses AI gratis selama 1 bulan pertama setelah daftar.
+                                @endif
                             </div>
                             <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Gunakan fitur website kasir</span></div>
                             <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Produk, stok, pelanggan, dan laporan</span></div>
@@ -621,6 +660,10 @@
                             <div class="premium-plan__feature"><i class="bi bi-x-circle-fill text-danger"></i><span>Fitur AI lanjutan belum tersedia</span></div>
                             @if((auth()->user()->premium_level ?? 1) >= 2)
                                 <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" disabled>Paket Aktif</button>
+                            @elseif(auth()->user()->premium_pending_level == 2)
+                                <button type="button" class="btn btn-outline-warning btn-sm w-100 mt-2" disabled><i class="bi bi-hourglass-split me-1"></i>Menunggu Verifikasi</button>
+                            @elseif(auth()->user()->premium_pending_level)
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" disabled>Ada Pengajuan Aktif</button>
                             @else
                                 <button type="button" class="btn btn-primary btn-sm w-100 mt-2" data-premium-level="2" data-premium-name="Premium 2" data-premium-price="Rp49.000/bulan" data-bs-toggle="modal" data-bs-target="#premiumPaymentModal">Beli Sekarang</button>
                             @endif
@@ -636,6 +679,10 @@
                             <div class="premium-plan__feature"><i class="bi bi-check-circle-fill"></i><span>Akses semua fitur AI</span></div>
                             @if((auth()->user()->premium_level ?? 1) >= 3)
                                 <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" disabled>Paket Aktif</button>
+                            @elseif(auth()->user()->premium_pending_level == 3)
+                                <button type="button" class="btn btn-outline-warning btn-sm w-100 mt-2" disabled><i class="bi bi-hourglass-split me-1"></i>Menunggu Verifikasi</button>
+                            @elseif(auth()->user()->premium_pending_level)
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100 mt-2" disabled>Ada Pengajuan Aktif</button>
                             @else
                                 <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-2" data-premium-level="3" data-premium-name="Premium 3" data-premium-price="Rp99.000/bulan" data-bs-toggle="modal" data-bs-target="#premiumPaymentModal">Beli Sekarang</button>
                             @endif
@@ -658,18 +705,43 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body text-center pt-0">
-                <div class="rounded-3 bg-light p-3 mb-3">
+                <div class="rounded-3 border p-3 mb-3" style="background: var(--bs-tertiary-bg);">
                     <div class="fw-bold" id="premiumPaymentName">Premium</div>
                     <div class="text-primary fw-bold fs-5" id="premiumPaymentPrice"></div>
                 </div>
-                <img src="{{ asset('images/qris.jpeg') }}" alt="QRIS pembayaran paket premium" class="img-fluid border rounded-3 p-2" style="width: min(100%, 250px);">
-                <p class="small text-muted mt-3 mb-0">Setelah pembayaran berhasil, tekan tombol konfirmasi di bawah.</p>
+                @php($storeQris = auth()->user()->store->qris_image ?? null)
+                @if($storeQris)
+                    <img src="{{ asset('storage/' . $storeQris) }}" alt="QRIS pembayaran paket premium" class="img-fluid border rounded-3 p-2" style="width: min(100%, 250px);">
+                @else
+                    <div class="rounded-3 border p-4 mb-2 text-center" style="background: var(--bs-tertiary-bg); width: min(100%, 250px); margin: 0 auto;">
+                        <i class="bi bi-qr-code fs-1 text-muted"></i>
+                        <p class="small text-muted mt-2 mb-0">QRIS belum diatur.<br>Silakan atur di <a href="{{ route('profile.edit') }}">Profil &rarr; Pembayaran</a>.</p>
+                    </div>
+                @endif
+                <p class="small text-muted mt-3 mb-0">Setelah pembayaran berhasil, unggah bukti di bawah.</p>
             </div>
             <div class="modal-footer border-0 pt-0">
-                <form action="{{ route('premium.confirm-payment') }}" method="POST" class="w-100">
+                <form action="{{ route('premium.confirm-payment') }}" method="POST" enctype="multipart/form-data" class="w-100 no-loader" id="premiumPaymentForm">
                     @csrf
                     <input type="hidden" name="premium_level" id="premiumPaymentLevel">
-                    <button type="submit" class="btn btn-success w-100"><i class="bi bi-check-circle me-1"></i>Saya Sudah Bayar</button>
+                    <div class="mb-3 text-start">
+                        <label for="payment_proof" class="form-label fw-semibold small">
+                            <i class="bi bi-paperclip me-1"></i>Bukti Pembayaran <span class="text-danger">*</span>
+                        </label>
+                        <input type="file"
+                               class="form-control form-control-sm @error('payment_proof') is-invalid @enderror"
+                               id="payment_proof"
+                               name="payment_proof"
+                               accept=".jpg,.jpeg,.png,.pdf"
+                               required>
+                        <div class="form-text">Format: JPG, PNG, atau PDF. Maks. 5 MB.</div>
+                        @error('payment_proof')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle me-1"></i>Konfirmasi Pembayaran
+                    </button>
                 </form>
             </div>
         </div>
